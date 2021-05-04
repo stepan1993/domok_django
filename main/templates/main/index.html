@@ -1,0 +1,87 @@
+{% extends 'main/main.html' %}
+{% block title %}ДомОК{% endblock %}
+{% block header %}{% include 'main/header.html' with homes=homes %}{% endblock %}
+{% block navbar %}{% include 'main/navbar.html' with active_tab="index" %}{% endblock %}
+{% block content %}     
+    {% if request.user.role == "moderator" %}
+        <div class="panel panel-default">
+            <div class="panel-body text-right">
+                <a href="{% url 'news:edit' 0 %}" class="btn btn-success">Добавить новость</a>
+            </div>
+        </div>
+    {% endif %}
+        <div class="news-list">
+            {% for item in news %}
+                <div class="panel panel-default">
+                    {% if item.creator == request.user %}
+                        <div class="panel-heading">
+                            <div class="pull-left">
+                                <a href="{% url 'news:edit' item.id %}" class="btn btn-info btn-xs">
+                                    <i class="fa fa-edit"></i> Редактировать
+                                </a>
+                            </div>
+                            <div class="pull-right">
+                                <a href="{% url 'news:delete' %}?id={{ item.id }}" class="btn btn-danger btn-xs" onclick="return confirm('Вы действительно хотите удалить эту новость?');">
+                                    <i class="fa fa-trash-o"></i> Удалить
+                                </a></div>
+                            <div class="clearfix"></div>
+                        </div>
+                    {% endif %}
+                    <div class="panel-body">
+                        <div class="news">
+                            <div class="name"><a href="{% url 'news:news' item.id %}">{{ item.title }}</a></div>
+                            <div class="small">{{ item.short_description }}</div>
+                        </div>
+                    </div>
+                    <div class="panel-footer">
+                        <div class="pull-left">
+                            {% with item.creator.first_name|add:' '|add:item.creator.last_name as name %}
+                                {{ name }}
+                            {% endwith %}
+                        </div>
+                        <div class="pull-right">{{ item.created_at|date:"d.m.Y" }}</div>
+                        <div class="clearfix"></div>
+                    </div>
+                </div>
+            {% endfor %}
+            {% if news.paginator.num_pages != 1 %}
+            
+            <div class="text-center">
+                    <ul class="pagination">
+                    {% if news.has_previous %}
+                        <li><a href="?page=1">«</a></li>
+                    {% endif %}
+            
+                    {% if news.number|add:'-4' > 1 %}
+                        <li><a href="?page={{ news.number|add:'-5' }}">&hellip;</a></li>
+                    {% endif %}
+            
+                    {% for i in news.paginator.page_range %}
+                        {% if news.number == i %}
+                            <li class="active">
+                        <span class="page-link">
+                            {{ i }}
+                            <span class="sr-only">(current)</span>
+                        </span>
+                        </li>
+                        {% elif i > news.number|add:'-5' and i < news.number|add:'5' %}
+                            <li><a href="?page={{ i }}">{{ i }}</a></li>
+                        {% endif %}
+                    {% endfor %}
+            
+                    {% if news.paginator.num_pages > news.number|add:'4' %}
+                    <li><a href="?page={{ news.number|add:'5' }}">&hellip;</a></li>
+                    {% endif %}
+            
+                    {% if news.has_next %}
+                        <li>
+                        <a href="?page={{ news.paginator.num_pages }}">»</a>
+                    </li>
+
+                    {% endif %}
+                </ul>
+            </div>{% endif %}
+        </div>
+        
+    
+{% endblock %}

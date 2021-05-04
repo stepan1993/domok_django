@@ -1,0 +1,80 @@
+{% extends 'main/main.html' %}
+{% block title %}Все сообщения. ДомОК{% endblock %}
+{% block navbar %}{% include 'main/navbar.html' with active_tab="problem" %}{% endblock %}
+{% block header %}{% include 'main/header.html' with homes=homes %}{% endblock %}
+{% block content %}   
+<div class="alert alert-success text-center">
+    <div class="row">
+        <div class="col-xs-12 col-sm-4 col-sm-offset-4">
+            <h4 class="mb-0 mb-xs-15">Все сообщения</h4>
+        </div>
+                            <div class="col-xs-12 col-sm-4">
+            <a href="{% url 'problem:add' %}" class="btn btn-primary btn-xs">Сообщить о проблеме</a>					</div>
+    </div>
+</div>
+<div class="ticket-list">
+    <div class="ticket mb-25">
+    <div class="foot">
+        <div class="row">
+            <div class="col-md-3">
+                <span>Дата</span>
+                17.04.2021 (14:59)				</div>
+            <div class="col-md-3">
+                <span>Кому</span>
+                Электрику				</div>
+            <div class="col-md-3">
+                <span>Статус</span>
+                На рассмотрении									</div>
+            <div class="col-md-3">
+                <span>Автор</span>
+                Кравченко Иван				</div>
+        </div>
+    </div>
+    <div class="body">
+        <div class="name"><a href="{% url 'problem:details' %}">№23. name_en</a></div>
+    </div>
+</div>
+    <div class="ticket mb-25">
+    <div class="foot">
+        <div class="row">
+            <div class="col-md-3">
+                <span>Дата</span>
+                17.04.2021 (14:15)				</div>
+            <div class="col-md-3">
+                <span>Кому</span>
+                Председателю				</div>
+            <div class="col-md-3">
+                <span>Статус</span>
+                Выполнено										/ Подтверждено									</div>
+            <div class="col-md-3">
+                <span>Автор</span>
+                Кравченко Иван				</div>
+        </div>
+    </div>
+    <div class="body">
+        <div class="name"><a href="{% url 'problem:details' %}">№22. trhrt</a></div>
+    </div>
+</div>
+    <div class="ticket mb-25">
+    <div class="foot">
+        <div class="row">
+            <div class="col-md-3">
+                <span>Дата</span>
+                26.01.2021 (09:58)				</div>
+            <div class="col-md-3">
+                <span>Кому</span>
+                Председателю				</div>
+            <div class="col-md-3">
+                <span>Статус</span>
+                Выполнено										/ Подтверждено									</div>
+            <div class="col-md-3">
+                <span>Автор</span>
+                Кравченко Иван				</div>
+        </div>
+    </div>
+    <div class="body">
+        <div class="name"><a href="{% url 'problem:details' %}">№21. Полный швах</a></div>
+    </div>
+</div>
+</div>
+{% endblock %}

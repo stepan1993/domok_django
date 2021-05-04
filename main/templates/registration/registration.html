@@ -1,0 +1,151 @@
+{% extends 'registration/login_main.html' %}
+{% block title %}Регистрация. ДомОК{% endblock %}
+{% block class %}wrap-767{% endblock %}
+
+{% block content %}
+<div class="alert alert-success text-center">
+    <h4 class="mb-0">Регистрация</h4>
+</div>
+<div class="panel panel-default">
+    {% if succeed %}
+        <div class="panel-body">
+                    <h3>Вы успешно зарегистрированы</h3>
+                    <p>Обращаем ваше внимание на то, что доступ к кабинету 
+                        Вам будет доступен после подтверждения вашего лицевого счета.</p>			
+        </div>
+    {% else %}
+        <div class="panel-body">
+            <form action="/registration" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="subAction" value="registration">
+                <div class="row">
+                    <div class="col-xs-12 col-sm-4">
+                        <div class="mb-15">
+                            {{ form.last_name }}
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-4">
+                        <div class="mb-15">
+                            {{ form.first_name }}
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-4">
+                        <div class="mb-15">
+                            {{ form.middle_name }}
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12 col-sm-6">
+                        <div class="mb-15">
+                            <div class="input-group">
+                                <span class="input-group-addon" id="basic-addon1">
+                                    <span class="glyphicon glyphicon-phone" aria-hidden="true"></span>
+                                </span>
+                                {{ form.phone_number }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-6">
+                        <div class="mb-15">
+                            <div class="input-group">
+                                <span class="input-group-addon" id="basic-addon1">@</span>
+                                {{ form.email }}
+                            </div>
+                            <span class="error-message-span">
+                                {% if form.email.errors %}
+                                    <span class="my-error-message">{{ form.email.errors }}</span>
+                                {% endif %}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-4">
+                        <div class="mb-15">
+                            <div class="input-group" id="account-username">
+                                <span class="input-group-addon" id="basic-addon1">
+                                    <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
+                                </span>
+                                {{ form.username }}
+                            </div>
+                            <span class="error-message-span">
+                                {% if form.username.errors %}
+                                    <span class="my-error-message">{{ form.username.errors }}</span>
+                                {% endif %}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-4">
+                        <div class="mb-15">
+                            <div class="input-group">
+                                <span class="input-group-addon" id="basic-addon1">
+                                    <span class="glyphicon glyphicon-asterisk" aria-hidden="true"></span>
+                                </span>
+                                {{ form.password1 }}
+                            </div>
+                            <span class="error-message-span">
+                                {% if form.password1.errors %}
+                                    <span class="my-error-message">{{ form.password1.errors }}</span>
+                                {% endif %}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-4">
+                        <div class="mb-15">
+                            <div class="input-group">
+                                <span class="input-group-addon" id="basic-addon1">
+                                    <span class="glyphicon glyphicon-asterisk" aria-hidden="true"></span>
+                                </span>
+                                {{ form.password2 }}
+                            </div>
+                            <span class="error-message-span">
+                                {% if form.password2.errors %}
+                                    <span class="my-error-message">{{ form.password2.errors }}</span>
+                                {% endif %}
+                            </span>
+                        </div>
+                    </div>
+            </div>
+            <div>
+                <div class="alert alert-danger hidden" id="account-alert"></div>
+            </div>
+            <div class="text-center mb-25">
+                <button type="submit" class="btn btn-lg btn-success">Зарегистрироваться</button>
+            </div>
+            <div class="alert alert-warning mb-0">
+                <h4 class="text-warning text-center">
+                    <span class="glyphicon glyphicon-warning-sign" aria-hidden="true"></span>
+                    Внимание
+                </h4>
+                <p class="text-warning">Ваши персональные данные будут использованы для подтверждения статуса собственника и коммуникаций в организации собственников</p>
+            </div>
+            </form>			
+        </div>
+    
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script type="text/javascript">
+        // form upload
+        $('#id_username').on('input',function(e){
+            console.log("AAAAAAAAAAAAAAAAAA")
+            // e.preventDefault();
+            $.ajax({
+                url: '/validate-username/?username='+$('#id_username').val(),
+                type: 'GET',
+                success: function (response) {
+                    console.log(response['is_valid'])
+                    if (response['is_valid']==false){
+                        $("#account-alert").removeClass("hidden").html(response['message']);
+                    }else{
+                        $("#account-alert").addClass("hidden")
+                    }
+                },
+                cache: false,
+                contentType: false,
+                processData: false
+            });
+        });
+        // end
+        </script>
+    {% endif %}
+</div>
+{% endblock %}

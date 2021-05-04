@@ -1,0 +1,51 @@
+{% extends 'main/main.html' %}
+{% block title %}ДомОК{% endblock %}
+{% block navbar %}{% include 'main/navbar.html' with active_tab="problem" %}{% endblock %}
+{% block header %}{% include 'main/header.html' with homes=homes %}{% endblock %}
+{% block content %}   
+<div class="ticket-list">
+	<div class="ticket mb-25">
+		<div class="body">
+			<div class="name"><h4>name_en</h4></div>
+			<div>
+				y			</div>
+					</div>
+		<div class="foot">
+			<div class="row">
+				<div class="col-md-3">
+					<span>Дата</span>
+									17.04.2021 (14:59)				</div>
+				<div class="col-md-3">
+					<span>Кому</span>
+									Электрику				</div>
+				<div class="col-md-3">
+					<span>Статус</span>
+									На рассмотрении				</div>
+				<div class="col-md-3">
+					<span>Автор</span>
+									Кравченко Иван				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="panel panel-default">
+	<div class="panel-body">
+		<form action="client/tickets/addComment" method="post" enctype="multipart/form-data">
+			<input type="hidden" name="id" value="23">
+			<div class="mb-15">
+				<textarea name="text" id="" class="form-control" cols="30" rows="5" placeholder="Комментарий" required=""></textarea>
+			</div>
+			<div class="fileupload-list js-fileupload-list"></div>
+			<div class="clearfix">
+				<div class="pull-left">
+					<button type="button" class="btn btn-info js-add-file">Добавить файл</button>
+				</div>
+				<div class="pull-right">
+					<button type="submit" class="btn btn-success">Добавить комментарий</button>
+				</div>
+			</div>
+		</form>
+	</div>
+</div>
+
+{% endblock %}

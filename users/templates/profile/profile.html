@@ -1,0 +1,194 @@
+{% extends 'main/main.html' %}
+{% load static %}
+{% block title %}Мой профиль. ДомОК{% endblock %}
+{% block header %}{% include 'main/header.html' with homes=homes %}{% endblock %}
+{% block navbar %}{% include 'main/navbar.html' with active_tab="profile" %}{% endblock %}
+{% block content %}
+<div class="alert alert-success text-center">
+    <div class="row">
+        <div class="col-xs-12 col-sm-4 col-sm-offset-4">
+            <h4 class="mb-0 mb-xs-15">Мой профиль</h4>
+        </div>
+    </div>
+</div>
+<div class="panel panel-default">
+	<div class="panel-body">
+		<div class="row">
+			<form method="post" enctype="multipart/form-data"  id="id_ajax_upload_form">
+				<input type="hidden" name="subAction" value="uploadAvatar">
+				<input type="hidden" name="clientkey" value="464d27c9ef3d9a72c8d67515ba5a2b14">
+				<div class="col-xs-12 col-sm-3 col-md-2">
+					<div class="mb-25">
+						<span class="thumbnail upload-wrapper">
+							{% if user.image == '' or user.image == None %}
+								<img src="{% static '/img/noavatar.png' %}" alt="fvdfv fvdfv" class="profile_image">
+							{% else %}
+								<img src="/media/{{ user.image }}" alt="fvdfv fvdfv" class="profile_image">
+							{% endif %}
+						</span>
+							{% csrf_token %}
+							<div class="upload-button btn btn-block btn-default">
+								{{ image_form }}
+								<span class="upload-button__text">Выбрать фото</span>
+							</div>	
+					</div>
+				</div>
+			</form>
+				<div class="col-xs-12 col-sm-9 col-md-10">
+					{% if accounts %}
+					<h4>Собственник:</h4>
+					{% for account in accounts %}
+						<div class="table-responsive">
+							<table class="table table-striped table-hover">
+								<tbody>
+									<tr>
+										<td width="30%">Город</td>
+										<td><b>{{ account.object.street.city }}</b></td>
+									</tr>
+									<tr>
+										<td>Адрес</td>
+										<td><b>{{ account.object.street }} д.{{ account.object.home }} кв. {{ account.object.appartment }}</b></td>
+									</tr>
+									<tr>
+										<td>Площадь квартиры</td>
+										<td><b>{{ account.total_square }}/{{ account.living_square }}</b> м<sup>2</sup></td>
+									</tr>
+									<tr>
+										<td>Голосующая доля</td>
+										<td><b>{{ account.share }}</b></td>
+									</tr>
+									<tr>
+										<td>Личевой счет</td>
+										<td><b>{{ account.account }}</b></td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					{% endfor %}
+				{% endif %}
+					<form method="post" action="/users/profile">
+					<input type="hidden" name="subAction" value="changeProfile">
+					<h4>Персональные данные</h4>
+					{% csrf_token %}
+    				
+					<div class="row">
+						<div class="col-xs-12 col-sm-4 col-md-4">
+							<div class="mb-15">
+								<label for="">Фамилия</label>
+								{{ profile_form.last_name }}
+							</div>
+						</div>
+						<div class="col-xs-12 col-sm-4 col-md-4">
+							<div class="mb-15">
+								<label for="">Имя</label>
+								{{ profile_form.first_name }}
+							</div>
+						</div>
+						<div class="col-xs-12 col-sm-4 col-md-4">
+							<div class="mb-15">
+								<label for="">Отчество</label>
+								{{ profile_form.middle_name }}
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-xs-12 col-sm-6 col-md-4">
+							<div class="mb-15">
+								<label for="">Логин</label>
+								{{ profile_form.username }}
+							</div>
+						</div>
+						<div class="col-xs-12 col-sm-6 col-md-4">
+							<div class="mb-15">
+								<label for="">Телефон</label>
+								<div class="input-group">
+									<span class="input-group-addon" id="basic-addon1">
+										<span class="glyphicon glyphicon-phone" aria-hidden="true"></span>
+									</span>
+									{{ profile_form.phone_number }}
+								</div>
+							</div>
+						</div>
+						<div class="col-xs-12 col-sm-6 col-md-4">
+							<div class="mb-15">
+								<label for="">E-mail</label>
+								<div class="input-group">
+									<span class="input-group-addon" id="basic-addon1">@</span>
+									{{ profile_form.email }}
+									
+								</div>
+								<span class="error-message-span">
+									{% if profile_form.email.errors %}
+										<span class="my-error-message">{{ profile_form.email.errors }}</span>
+									{% endif %}
+								</span>
+								
+							</div>
+						</div>
+					</div>
+
+					<h4>Изменить пароль</h4>
+					<div class="row">
+						<div class="col-xs-12 col-sm-6 col-md-4">
+							<div class="mb-15">
+								<label for="">Новый пароль</label>
+								<div class="input-group">
+									<span class="input-group-addon" id="basic-addon1">
+										<span class="glyphicon glyphicon-asterisk" aria-hidden="true"></span>
+									</span>
+									{{ profile_form.password1 }}
+								</div>
+							</div>
+						</div>
+						
+						<div class="col-xs-12 col-sm-6 col-md-4">
+							<div class="mb-15">
+								<label for="">Новый пароль еще раз</label>
+								<div class="input-group">
+									<span class="input-group-addon" id="basic-addon1">
+										<span class="glyphicon glyphicon-asterisk" aria-hidden="true"></span>
+									</span>
+									{{ profile_form.password2 }}
+								</div>
+								<span class="error-message-span">
+									{% if profile_form.password2.errors %}
+										<span class="my-error-message">{{ profile_form.password2.errors }}</span>
+									{% endif %}
+								</span>
+							</div>
+						</div>
+					</div>
+					<div class="clearfix">
+						<div class="pull-right">
+							<button type="submit" class="btn btn-success">Сохранить</button>
+						</div>
+					</div>
+
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script type="text/javascript">
+ // form upload
+ $('#id_ajax_upload_form').change(function(e){
+	 e.preventDefault();
+	 $form = $(this)
+	 var formData = new FormData(this);
+	 $.ajax({
+		 url: '/users/upload',
+		 type: 'POST',
+		 data: formData,
+		 success: function (response) {
+			 $('.profile_image').attr('src',response)
+		 },
+		 cache: false,
+		 contentType: false,
+		 processData: false
+	 });
+ });
+ // end
+</script>
+{% endblock %}

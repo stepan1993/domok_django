@@ -1,0 +1,28 @@
+<nav class="navbar navbar-default">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </button>
+    </div>
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+        
+        <ul class="nav navbar-nav">
+            <li class="{% if active_tab == 'accounts'%}active{% endif %}"><a href="{% url 'users:account' %}">Счета</a></li>
+            {% if request.user.role == 'moderator' %}
+                <li  class="{% if active_tab == 'owners'%}active{% endif %}"><a href="{% url 'users:owners' %}">Собственники</a></li>
+            {% endif %}
+            <li class="{% if active_tab == 'chat'%}active{% endif %}"><a href="{% url 'chat:chat' %}">Чат</a></li>
+            <li class="{% if active_tab == 'vote'%}active{% endif %}"><a href="{% url 'vote:vote' %}">Голосования</a></li>
+            <li class="{% if active_tab == 'problem'%}active{% endif %}"><a href="{% url 'problem:problem' %}">Сообщения о проблемах</a></li>
+            <li class="{% if active_tab == 'contacts'%}active{% endif %}"><a href="{% url 'users:contacts' %}">Контакты</a></li>
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+            <li >
+                <a href="{% url 'users:profile' %}"><i class="fa fa-user-circle-o"></i>{{ request.user.first_name }} {{ request.user.last_name }}</a>
+            </li>
+        </ul>
+    </div>
+</nav>

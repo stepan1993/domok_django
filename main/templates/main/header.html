@@ -1,0 +1,43 @@
+{% load static %}
+<div class="header-top">
+    <div class="row row-flex">
+        <div class="col-xs-12 col-sm-4">
+            <div class="logo">
+                <a href="/">
+                    <img src="{% static 'images/logo.png' %}" alt="">
+                </a>
+            </div>
+        </div>
+        <div class="col-xs-12 col-sm-8 text-right text-left-xs">
+            <ul class="nav navbar-top">                              
+                {% if homes %}
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" 
+                            aria-expanded="false">Выбор дома<span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            {% for home in homes %}  
+                                <li>
+                                    <a href="{% url 'main:change-current-home' %}?id={{ home.id }}" class="js-change-object" data-object="9">
+                                        {{ home.street.city.country }}, {{ home.street.city }}, {{ home.street }}, 
+                                        {{ home.home|slice:":-2" }}
+                                    </a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </li>
+                {% endif %}
+                <li><a href="/accounts/logout">Выход</a></li>
+            </ul>
+            {% if current %}
+                <p style="color: #339933;">
+                    {% if request.user.role == "moderator" %}
+                        Кабинет руководителя:
+                    {% else %}
+                        Электронная квартира:
+                    {% endif %}
+                    {{ current.street.city.country }}, 
+                    {{ current.street.city }}, {{ current.street }}, {{ current.home|slice:":-2" }}, кв. {{ current.appartment }}</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
