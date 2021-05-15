@@ -11,43 +11,40 @@
         </div>
     </div>
 </div>
-{% for moderator in moderators %}
-{moderator.id{}}
-{% endfor %}
-<form method="get" action="client/users/list">
+<form method="get" action="{% url 'users:owners' %}">
     <div class="panel-body">
         <div class="mb-15 text-right">
-            <button type="reset" class="btn btn-default">Очистить</button>
+            <button type="reset" class="btn btn-default reset_owners_filter">Очистить</button>
             <button type="submit" class="btn btn-info">Найти</button>
         </div>
         <div class="filter filter-three">
             <div class="pr-8 filter-three-w-35">
                 <div class="mb-15">
-                    <input name="name" type="text" class="form-control" value="" placeholder="ФИО">
+                    <input name="name" type="text" class="form-control" value="{{ filters.name }}" placeholder="ФИО">
                 </div>
             </div>
             <div class="pr-8 filter-three-w-10">
                 <div class="mb-15">
-                    <input name="flatnum" type="text" class="form-control" value="" placeholder="№ кв.">
+                    <input name="appartment" type="text" class="form-control" value="{{ filters.appartment }}" placeholder="№ кв.">
                 </div>
             </div>
             <div class="pr-8 filter-three-w-20">
                 <div class="mb-15">
-                    <input name="phone" type="text" class="form-control phoneable" value="" placeholder="телефон">
+                    <input name="phone_number" type="text" class="form-control phoneable" value="{{ filters.phone_number }}" placeholder="телефон">
                 </div>
             </div>
             <div class="pr-8 filter-three-w-20">
                 <div class="mb-15">
-                    <input name="account" type="text" class="form-control" value="" placeholder="Лицевой счет">
+                    <input name="account" type="text" class="form-control" value="{{ filters.account }}" placeholder="Лицевой счет">
                 </div>
             </div>
             <div class="filter-three-w-15">
                 <div class="mb-15">
                     <select name="active" class="form-control">
                         <option value="">Все</option>
-                        <option value="1">Активный</option>
-                        <option value="0">Новый</option>
-                        <option value="-1">Блокирован</option>
+                        <option value="1" {% if filters.active == "1" %} selected {% endif %}>Активный</option>
+                        <option value="0" {% if filters.active == "0" %} selected {% endif %}>Новый</option>
+                        <option value="-1" {% if filters.active == "-1" %} selected {% endif %}>Блокирован</option>
                     </select>
                 </div>
             </div>
@@ -64,24 +61,66 @@
                 </tr>
                 </thead>
                 <tbody>
-                            <tr>
-                    <td><a href="client/users/edit?id=46">Кравченко Иван Николаевич</a></td>
-                    <td>2 </td>
-                    <td>+375(29)295-68-71</td>
-                    <td>303500003</td>
-                    <td>
-                                                                <span class="label label-block label-success">Активный</span>
-                    </td>
-                </tr>
-                            </tbody>
+                    {% for account in accounts %}
+                        <tr>
+                            <td><a href="{% url 'users:owner' account.custom_user.id %}">
+                                {{ account.custom_user.last_name }} {{ account.custom_user.first_name }} {{ account.custom_user.middle_name }}
+                            </a></td>
+                            <td> {{ account.object.appartment }}</td>
+                            <td> {{ account.custom_user.phone_number }}</td>
+                            <td> {{ account.account }}</td>
+                            {% if account.custom_user.is_active == 1 %}
+                                <td><span class="label label-block label-success">Активный</span></td>
+                            {% elif account.custom_user.is_active == -1 %}
+                                <td><span class="label label-block label-danger">Блокирован</span></td>
+                            {% elif account.custom_user.is_active == 0 %}
+                                <td><span class="label label-block label-warning">Новый</span></td>
+                            {% endif %}
+                            
+                        </tr>
+                    {% endfor %}
+                </tbody>
             </table>
         </div>
             <div class="text-center">
-            <ul class="pagination">
+                {% if accounts.paginator.num_pages != 1 %}
+            
+                <div class="text-center">
+                        <ul class="pagination">
+                        {% if accounts.has_previous %}
+                            <li><a href="?page=1">«</a></li>
+                        {% endif %}
                 
+                        {% if accounts.number|add:'-4' > 1 %}
+                            <li><a href="?page={{ accounts.number|add:'-5' }}">&hellip;</a></li>
+                        {% endif %}
                 
-        </ul>
+                        {% for i in accounts.paginator.page_range %}
+                            {% if accounts.number == i %}
+                                <li class="active">
+                            <span class="page-link">
+                                {{ i }}
+                                <span class="sr-only">(current)</span>
+                            </span>
+                            </li>
+                            {% elif i > accounts.number|add:'-5' and i < accounts.number|add:'5' %}
+                                <li><a href="?page={{ i }}">{{ i }}</a></li>
+                            {% endif %}
+                        {% endfor %}
+                
+                        {% if accounts.paginator.num_pages > accounts.number|add:'4' %}
+                        <li><a href="?page={{ accounts.number|add:'5' }}">&hellip;</a></li>
+                        {% endif %}
+                
+                        {% if accounts.has_next %}
+                            <li>
+                            <a href="?page={{ accounts.paginator.num_pages }}">»</a>
+                        </li>
+    
+                        {% endif %}
+                    </ul>
+                </div>{% endif %}
         </div>
     </div>
-    </form>
+</form>
 {% endblock %}

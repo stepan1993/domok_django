@@ -2,72 +2,87 @@
 {% block title %}Голосования. ДомОК{% endblock %}
 {% block navbar %}{% include 'main/navbar.html' with active_tab="vote" %}{% endblock %}
 {% block header %}{% include 'main/header.html' with homes=homes %}{% endblock %}
-{% block content %}   
+{% block content %}  
+{% now "d-m-Y" as todays_date %}
+
 <div class="alert alert-success text-center">
 	<div class="row">
 		<div class="col-xs-12 col-sm-4 col-sm-offset-4">
 			<h4 class="mb-0 mb-xs-15">Голосования</h4>
 		</div>
+		{% if request.user.role == "moderator" %}
+			<div class="col-xs-12 col-sm-4">
+				<a href="{% url 'vote:add' 0 %}" class="btn btn-primary btn-xs">Добавить голосование</a>					
+			</div>
+		{% endif %}
 	</div>
 </div>
+
 <div class="panel panel-default">
 	<div class="panel-body">
+		{% if votes or search_word %}
+			<form method="get">
+				<div class="mb-15">
+					<div class="row">
+						<div class="col-xs-12 col-sm-8 col-md-10">
+							<div class="mb-15">
+								<input type="text" name="name" value="{{ search_word }}" class="form-control" placeholder="Вопрос на голосование">
+							</div>
+						</div>
+						<div class="col-xs-12 col-sm-4 col-md-2">
+							<button type="submit" class="btn btn-success btn-block">Поиск</button>
+						</div>
+					</div>
+				</div>
+			</form>
+		{% endif %}
 		<div class="table-responsive">
 			<table class="table table-striped table-hover">
 				<thead>
 				<tr>
 					<th>Вопрос на голосование</th>
+					<th>Начало</th>
 					<th>Окончание</th>
 					<th style="width: 150px;">Статус</th>
 				</tr>
 				</thead>
 				<tbody>
-								<tr>
-					<td><a href="{% url 'vote:details' %}">thrthrt</a></td>
-					<td>23.04.2021</td>
-					<td>
-																									<span class="label label-block label-warning"><b>Не состоялось</b></span>											</td>
-				</tr>
-								<tr>
-					<td><a href="{% url 'vote:details' %}">ttttttttt</a></td>
-					<td>17.04.2021</td>
-					<td>
-																									<span class="label label-block label-warning"><b>Не состоялось</b></span>											</td>
-				</tr>
-								<tr>
-					<td><a href="{% url 'vote:details' %}">Barev</a></td>
-					<td>30.04.2021</td>
-					<td>
-													<span class="label label-block label-primary">Активно</span>
-																							</td>
-				</tr>
-								<tr>
-					<td><a href="{% url 'vote:details' %}">Вопрос №11</a></td>
-					<td>26.01.2021</td>
-					<td>
-																									<span class="label label-block label-warning"><b>Не состоялось</b></span>											</td>
-				</tr>
-								<tr>
-					<td><a href="{% url 'vote:details' %}">Новый вопрос 25.01.21</a></td>
-					<td>26.01.2021</td>
-					<td>
-																									<span class="label label-block label-warning"><b>Не состоялось</b></span>											</td>
-				</tr>
-								<tr>
-					<td><a href="{% url 'vote:details' %}">Что будем делать?</a></td>
-					<td>23.09.2019</td>
-					<td>
-																									<span class="label label-block label-warning"><b>Не состоялось</b></span>											</td>
-				</tr>
-								<tr>
-					<td><a href="{% url 'vote:details' %}">Первый вопрос</a></td>
-					<td>07.09.2019</td>
-					<td>
-																									<span class="label label-block label-warning"><b>Не состоялось</b></span>											</td>
-				</tr>
-								</tbody>
+					{% for vote in votes %}
+						<tr>
+							{% if vote.is_future_due %}
+								<td><a href="{% url 'vote:add' vote.id %}">{{ vote.question }}</a></td>
+							{% elif vote.is_active %}
+								{% if request.user.role == "moderator" %}
+									<td><a href="{% url 'vote:result' vote.id %}">{{ vote.question }}</a></td>
+								{% else %}
+									<td><a href="{% url 'vote:set-vote' vote.id %}">{{ vote.question }}</a></td>
+								{% endif %}
+							{% else %}
+								<td><a href="{% url 'vote:result' vote.id %}">{{ vote.question }}</a></td>
+							{% endif %}
+							<td>{{ vote.start_date|date:"d.m.Y"}}</td>
+							<td>{{ vote.end_date|date:"d.m.Y"}}</td>
+							{% if vote.is_future_due %}
+								<td><span class="label label-block label-info"><b>Скоро</b></span></td>
+							{% elif vote.is_past_due %}
+								{% if request.user.role == "moderator" %}
+									<td><span class="label label-block label-danger">Завершен</span></td>
+								{% else %}
+									{% if vote.members_count_percentage >= vote.quorum %}
+									<td><span class="label label-block label-danger">Завершен</span></td>
+									{% else %}
+									<td><span class="label label-block label-warning"><b>Не состоялось</b></span></td>
+									{% endif %}
+								{% endif%}
+							{% elif vote.is_active %}
+								<td><span class="label label-block label-primary"><b>Активно</b></span></td>								
+							{% endif %}
+						</tr>
+					{% endfor %}
+				</tbody>
 			</table>
 		</div>
-			</div>
+	</div>
 </div>
+
 {% endblock %}

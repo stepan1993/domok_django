@@ -7,6 +7,6 @@ urlpatterns = [
     path('', index,name='index'),
     path('registration', registration),
     path('validate-username/',validate_username),
+    
     re_path(r'^change-current-home/$', change_current_home, name='change-current-home'),
-] 
-
+]

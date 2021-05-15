@@ -1,4 +1,4 @@
-from users.models import ClientAccount
+from users.models import Account
 from location.models import Object
 
 def get_homes(request):
@@ -17,7 +17,7 @@ def get_homes(request):
             obj['current'] = current
     elif request.user.role == "client":
         try:
-            object_id = ClientAccount.objects.get(client=request.user).account.object_id
+            object_id = Account.objects.get(custom_user=request.user).object_id
             obj['current'] =  Object.objects.filter(id=object_id).first()
             request.session['current_object'] = obj['current'].id
         except:

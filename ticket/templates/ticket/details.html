@@ -1,0 +1,194 @@
+{% extends 'main/main.html' %}
+{% block title %}ДомОК{% endblock %}
+{% block navbar %}{% include 'main/navbar.html' with active_tab="ticket" %}{% endblock %}
+{% block header %}{% include 'main/header.html' with homes=homes %}{% endblock %}
+{% load static %}
+{% block content %}   
+
+<div class="ticket-list">
+	<div class="ticket mb-25">
+		<div class="body">
+			<div class="name"><h4>{{ ticket.problem }}</h4></div>
+			<div>{{ ticket.description }}</div>
+			<p>&nbsp;</p>
+			<div class="ticket-filelist">
+				<p><b>Прикрепленные файлы</b></p>
+				{% for file in ticket_files %}
+					<div class="file">
+						<i class="fa fa-file-image-o"></i>
+						<a href="/media/ticket/{{ file.file }}" target="_blank">
+							{{file.file}}
+						</a>
+						({{ file.size }} Кб)
+					</div>
+				{% endfor %}
+				</div>
+		</div>
+	
+		<div class="foot">
+			
+			<div class="row">
+				<div class="col-md-3">
+					<span>Дата</span>{{ ticket.created_date|date:"d.m.Y (H:i)" }}	
+				</div>
+				<div class="col-md-3">
+					<span>Кому</span>{{ ticket.whom.dative }}</div>
+				<div class="col-md-3">
+					<span>Статус</span>
+					{{status}}
+				</div>
+				<div class="col-md-3">
+					<span>Автор</span>
+					{{ ticket.author.last_name }} {{ ticket.author.first_name }}	
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{% if request.user.role == "moderator" %}
+
+<div class="panel panel-default">
+	<div class="panel-body">
+		{% if ticket.accepted %}
+		<div class="row">
+			<div class="col-md-4">
+				{% if ticket.finished %}
+				<a href="#" class="btn btn-success" disabled>
+					Проблема решена
+				</a> 
+				{% else %}
+				<a href="{% url 'ticket:finish' ticket.id %}" class="btn btn-success">
+					Проблема решена
+				</a> 
+				{% endif %}
+			</div>
+			<div class="col-md-4 text-center" style="padding-top:5px;">
+				{% if ticket.finished and not ticket.finish_accepted %}
+					не подтверждено	
+				{% elif ticket.finished and ticket.finish_accepted %}
+					Подтверждено заявителем
+				{% endif %}
+			</div>
+			
+			<div class="col-md-4 text-right">
+				{% if ticket.finish_accepted %}
+				<a href="#" class="btn btn-danger" disabled>Отписаться от проблемы</a>
+				{% else %}
+				<a href="{% url 'ticket:unsubscribe' ticket.id %}" class="btn btn-danger">Отписаться от проблемы</a>
+				{% endif %}
+			</div>
+		</div>
+		{% else %}
+		<div class="text-right">
+			<a href="{% url 'ticket:subscribe' ticket.id %}" class="btn btn-success">Подписаться на проблему</a>
+		</div>
+		{% endif %}
+	</div>
+</div>
+{% elif request.user.role == "client" and ticket.accepted %}
+<div class="panel panel-default">
+	<div class="panel-body">
+		<div class="row">
+			<div class="col-md-4">{{ ticket.accepted_by.last_name }} {{ ticket.accepted_by.first_name }}	</div>
+			<div class="col-md-4"><a href="tel:{{ ticket.accepted_by.phone_number }}">{{ ticket.accepted_by.phone_number }}</a></div>
+			<div class="col-md-4"><a href="mailto:{{ ticket.accepted_by.email }}">{{ ticket.accepted_by.email }}</a></div>
+		</div>
+		{% if ticket.finished and not ticket.finish_accepted %}
+		<hr>
+		<div class="row" style="margin-top: 25px;">
+			<div class="col-md-6">
+				<a href="{% url 'ticket:accept-finish' ticket.id %}" class="btn btn-success" style="width: 100%;">Подтвердить решение</a>
+			</div>
+			<div class="col-md-6">
+				<a href="{% url 'ticket:decline-finish' ticket.id %}" class="btn btn-danger" style="width: 100%;">Отклонить решение</a>
+			</div>
+		</div>
+		{% elif ticket.finish_accepted and ticket.finished %}
+		<div class="text-center" style="margin-top: 25px;"><b>Решение подтверждено</b></div>
+		{% endif %}
+	</div>
+</div>
+{% endif %}
+{% if comments %}
+<div class="panel panel-default">
+	<div class="panel-body">
+		
+		{% for comment in comments %}
+		<div class="chat-box-line">
+			<div class="row">
+				<div class="col-xs-12 col-sm-2 hidden-xs">
+					<div class="chat-box-line-name">
+						{{ comment.0.author.last_name }} {{ comment.0.author.first_name }} 
+					</div>
+					<div class="chat-box-line-face thumbnail">
+						{% if comment.0.author.image == '' or comment.0.author.image == None %}
+								<img src="{% static '/img/noavatar.png' %}" alt="fvdfv fvdfv" class="profile_image">
+							{% else %}
+								<img src="/media/{{ comment.0.author.image }}" alt="fvdfv fvdfv" class="profile_image">
+							{% endif %}
+					</div>
+					<div class="chat-box-line-num">
+						<a href="tel:{{ comment.0.author.phone_number }}">{{ comment.0.author.phone_number }}</a>
+					</div>
+				</div>
+				<div class="col-xs-12 col-sm-10">
+					<div class="clearfix">
+						<div class="pull-left visible-xs">
+							<div class="chat-box-line-name">
+								{{ comment.0.author.last_name }} {{ comment.0.author.first_name }} 
+								 <a href="tel:{{ comment.0.author.phone_number }}">{{ comment.0.author.phone_number }}</a>
+							</div>
+						</div>
+						<div class="pull-right">
+							<div class="chat-box-line-date">
+								{{ comment.0.date|date:"d.m.Y (H:i)" }}	
+							</div>
+						</div>
+					</div>
+					<div class="chat-box-line-mess">
+						{{comment.0.comment}}	
+					{% if comment.1 %}
+					<div class="ticket-filelist" style="margin-top: 10px;">
+							  <p><b>Прикрепленные файлы</b></p>
+							  {% for file in comment.1 %}
+								<div class="file">
+									<i class="fa fa-file-image-o"></i>
+									<a href="/media/ticket/comment/{{file.file}}" target="_blank">
+										{{file.file}}									
+									</a>
+									({{ file.size}} Кб)
+								</div>
+								{% endfor %}
+						</div>
+					{% endif %}
+					</div>
+				</div>
+			</div>
+		</div>
+		{% endfor %}
+	</div>
+</div>
+{% endif %}
+<div class="panel panel-default">
+	<div class="panel-body">
+		<form  method="post" enctype="multipart/form-data">
+			{% csrf_token %}
+			<input type="hidden" name="id" value="30">
+			<div class="mb-15">
+				{{comment_form.comment}}
+				{{comment_form.ticket_id}}
+				{{comment_form.author_id}}
+			</div>
+			<div class="fileupload-list js-fileupload-list"></div>
+			<div class="clearfix">
+				<div class="pull-left">
+					<button type="button" class="btn btn-info js-add-file">Добавить файл</button>
+				</div>
+				<div class="pull-right">
+					<button type="submit" class="btn btn-success">Добавить комментарий</button>
+				</div>
+			</div>
+		</form>
+	</div>
+</div>
+{% endblock %}

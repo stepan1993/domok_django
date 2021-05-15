@@ -1,39 +1,28 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser
 from django.contrib.auth.models import PermissionsMixin
-from django.db.models.deletion import PROTECT
+from django.db.models.deletion import CASCADE, PROTECT, SET_NULL
 from django.utils.translation import gettext_lazy as _
 from django.utils import timezone
 from phonenumber_field.modelfields import PhoneNumberField
 from service.models import Organization, Service
 from .managers import CustomUserManager
 from location.models import Object
-from PIL import Image
 
-class Account(models.Model):
-    account = models.CharField(unique=True, max_length=50, null=False, blank=False,verbose_name = "Счет")
-    name = models.CharField(max_length=255, null=False, blank=False,verbose_name = "ФИО")
-    object = models.ForeignKey(Object, on_delete=PROTECT, null=False, blank=False,verbose_name = "Объект", 
-                                    related_name="object_accounts")
-    total_square = models.FloatField(null=True, blank=True,verbose_name = "Общая плащадь")
-    living_square = models.FloatField(null=True, blank=True,verbose_name = "Жилая площадь")
-    share = models.FloatField(null=True, blank=True,verbose_name = "Доля")
-
-    def __str__(self):
-        return self.account
-    class Meta:
-        verbose_name = "Счет"
-        verbose_name_plural = "Счета"
-
+ACTIVE_STATUS = [
+        (1, 'Активный'),
+        (0, 'Новый'),
+        (-1, 'Блокирован'),
+    ]
 class CustomUser(AbstractBaseUser, PermissionsMixin):
     first_name = models.CharField(max_length=255, null=True, blank=True, verbose_name="Имя")
     last_name = models.CharField(max_length=255, null=True, blank=True, verbose_name="Фамилия")
     middle_name = models.CharField(max_length=255, null=True, blank=True, verbose_name="Отчество")
     image = models.ImageField(null=True, upload_to='users/%Y/%m/%d/',)
-    email = models.EmailField(unique=True, verbose_name="Эл. почта")
+    email = models.EmailField(verbose_name="Эл. почта")
     username = models.CharField(unique=True,max_length=255,null=False, blank=False, verbose_name="Логин")
     is_staff = models.BooleanField(default=False)
-    is_active = models.BooleanField(default=True)
+    is_active = models.IntegerField(default=1, choices=ACTIVE_STATUS)
     date_joined = models.DateTimeField(default=timezone.now)
     phone_number = PhoneNumberField(blank=False, null=False, verbose_name="Телефон")
     role = models.CharField(max_length=20,null=False, default="administrator",blank=False)
@@ -51,6 +40,24 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     class Meta:
         verbose_name = "Пользаватель"
         verbose_name_plural = "Пользавательи"
+
+class Account(models.Model):
+    custom_user = models.ForeignKey(CustomUser, on_delete=SET_NULL, null=True, 
+                                                blank=True, related_name="custom_user_account")
+    account = models.CharField(unique=True, max_length=50, null=False, blank=False,verbose_name = "Счет")
+    name = models.CharField(max_length=255, null=False, blank=False,verbose_name = "ФИО")
+    object = models.ForeignKey(Object, on_delete=PROTECT, null=False, blank=False,verbose_name = "Объект", 
+                                    related_name="object_accounts")
+    total_square = models.FloatField(null=True, blank=True,verbose_name = "Общая плащадь")
+    living_square = models.FloatField(null=True, blank=True,verbose_name = "Жилая площадь")
+    share = models.FloatField(null=True, blank=True,verbose_name = "Доля")
+
+
+    def __str__(self):
+        return self.account
+    class Meta:
+        verbose_name = "Счет"
+        verbose_name_plural = "Счета"
 
 class Worker(CustomUser):
     class Meta:
@@ -75,21 +82,6 @@ class Moderator(CustomUser):
         proxy = True
         verbose_name = "Модератор"
         verbose_name_plural = "Модераторы"
-
-class ClientAccount(models.Model):
-    client = models.ForeignKey(CustomUser,on_delete=PROTECT, null=False, blank=False, related_name="client_accounts")
-    account = models.ForeignKey(Account,on_delete=PROTECT, null=False, blank=False, related_name="account_clients")
-
-    def __str__(self):
-        return str(self.account)
-        
-    def address(self):
-        return str(self.account.object.street.city.country)+", г. "+str(self.account.object.street.city)\
-                            +", "+str(self.account.object.street)+", д. "+str(self.account.object.home[:-2])\
-                                +", кв. "+str(self.account.object.appartment)
-    class Meta:
-        verbose_name = "Лицевой счет"
-        verbose_name_plural = "Лицевой счеты"
 
 class OrganizationWorker(models.Model):
     organization = models.ForeignKey(Organization, on_delete=PROTECT, null=False, blank=False, 

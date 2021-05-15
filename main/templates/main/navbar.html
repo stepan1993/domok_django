@@ -16,7 +16,7 @@
             {% endif %}
             <li class="{% if active_tab == 'chat'%}active{% endif %}"><a href="{% url 'chat:chat' %}">Чат</a></li>
             <li class="{% if active_tab == 'vote'%}active{% endif %}"><a href="{% url 'vote:vote' %}">Голосования</a></li>
-            <li class="{% if active_tab == 'problem'%}active{% endif %}"><a href="{% url 'problem:problem' %}">Сообщения о проблемах</a></li>
+            <li class="{% if active_tab == 'ticket'%}active{% endif %}"><a href="{% url 'ticket:ticket' %}">Сообщения о проблемах</a></li>
             <li class="{% if active_tab == 'contacts'%}active{% endif %}"><a href="{% url 'users:contacts' %}">Контакты</a></li>
         </ul>
         <ul class="nav navbar-nav navbar-right">

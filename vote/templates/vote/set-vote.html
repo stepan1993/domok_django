@@ -1,0 +1,66 @@
+{% extends 'main/main.html' %}
+{% block title %}Голосования. ДомОК{% endblock %}
+{% block navbar %}{% include 'main/navbar.html' with active_tab="vote" %}{% endblock %}
+{% block header %}{% include 'main/header.html' with homes=homes %}{% endblock %}
+{% block content %}   
+<div class="panel panel-default">
+	<div class="panel-body">
+		<p>Вопрос на голосование:</p>
+		<h4 class="text-primary"><b>{{ vote.question }}  {{ vote.created_at|date:"d-m-Y" }}</b></h4>
+		<p><b>{{ vote.description }} {{ vote.created_at|date:"d-m-Y" }}</b></p>
+		<p class="text-right"><i>Дата завершения голосования: {{ vote.end_date|date:"d-m-Y" }}</i></p>
+		<div class="row">
+			<div class="col-xs-12 col-md-6">
+				<table class="table table-bordered">
+					<tbody><tr>
+						<td>Всего проголосовало</td>
+						<td><span class="text-uppercase"><b>{{vote.members_count_percentage}}%</b></span></td>
+					</tr>
+					<tr>
+						<td>Ваш Вклад</td>
+						<td style="width: 200px;">
+							<span class="text-uppercase"><b>
+								{% if vote_member.point == 1 %}
+									за
+								{% elif vote_member.point == 2 %}
+									против
+								{% elif vote_member.point == 3 %}
+									Воздержусь
+								{% endif %}</b></span>
+						</td>
+					</tr>
+				</tbody></table>
+			</div>
+		</div>
+		<p class="text-uppercase"><b>Голосовать:</b></p>
+		<form method="post">
+			<input type="hidden" name="id" value="18">
+			<input type="hidden" name="vote" value="1">
+			<div class="mb-25">
+				<div class="row">
+					<div class="col-xs-12 col-sm-4">
+						<div class="mb-15">
+							<button type="button" class="btn btn-lg btn-block btn-success btn-default js-vote  {% if vote_member.point and vote_member.point != 1 %} vote-btn-disabled {% endif %}" value="1">За</button>
+						</div>
+					</div>
+					<div class="col-xs-12 col-sm-4">
+						<div class="mb-15">
+							<button type="button" class="btn btn-lg btn-block btn-danger js-vote {% if vote_member.point and vote_member.point != 2 %} vote-btn-disabled {% endif %}" value="2">Против</button>
+						</div>
+					</div>
+					<div class="col-xs-12 col-sm-4">
+						<div class="mb-15">
+							<button type="button" class="btn btn-lg btn-block btn-warning js-vote {% if vote_member.point and vote_member.point != 3 %} vote-btn-disabled {% endif %}" value="3">Воздержусь</button>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="clearfix">
+				<div class="pull-right">
+					<button type="submit" class="btn btn-success" disabled="">Сохранить</button>
+				</div>
+			</div>
+		</form>
+	</div>
+</div>
+{% endblock %}

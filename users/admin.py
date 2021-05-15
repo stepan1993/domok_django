@@ -1,18 +1,6 @@
-from location.models import City, Country, Object, Street
-from service.models import Service
-from django.contrib import admin
-from django.contrib.auth.admin import UserAdmin
-from .models import Account, Administrator, Client, ClientAccount, CustomUser,  Moderator, Worker
-from django import forms
-from django_cascading_dropdown_widget.widgets import DjangoCascadingDropdownWidget
-from django_cascading_dropdown_widget.widgets import CascadingModelchoices
 
-class AccountInline(admin.TabularInline):
-        model = ClientAccount
-        raw_id_fields = ['account']
-        fields = ['account','address']
-        readonly_fields = ['address']
-        extra=1
+from django.contrib import admin
+from .models import Account, Administrator, Client,  Moderator, Worker
 
 
 @admin.register(Client)
@@ -21,7 +9,7 @@ class Client(admin.ModelAdmin):
         list_display = ('first_name', 'last_name','middle_name','email','phone_number','is_active')
         search_fields =['first_name', 'last_name','middle_name','email','phone_number']
         change_form_template = "users/change-form.html"
-        inlines = [AccountInline,]
+        # inlines = [AccountInline,]
         def get_queryset(self, request):
                 qs = super().get_queryset(request)
                 return qs.filter(role="client")

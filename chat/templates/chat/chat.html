@@ -1,8 +1,9 @@
 {% extends 'main/main.html' %}
 {% block title %}Чат. ДомОК{% endblock %}
+{% load static %}
 {% block header %}{% include 'main/header.html' with homes=homes %}{% endblock %}
 {% block navbar %}{% include 'main/navbar.html' with active_tab="chat" %}{% endblock %}
-{% block content %}   
+{% block content %}
 <div class="alert alert-success text-center">
     <div class="row">
         <div class="col-xs-12 col-sm-4 col-sm-offset-4">
@@ -10,16 +11,23 @@
         </div>
     </div>
 </div>
+
 <div class="panel panel-default">
 	<div class="panel-body">
-		<div class="chat-box js-chat-box"><div class="chat-box-line js-chat-line" data-id="33">
+		<div class="chat-box js-chat-box">
+		{% for message in messages %}
+			<div class="chat-box-line js-chat-line" data-id="33">
 			<div class="row">
 				<div class="col-xs-12 col-sm-2 hidden-xs">
 					<div class="chat-box-line-name">
-						<span class="js-name">Кравченко Иван</span>
+						<span class="js-name">{{ message.user }}</span>
 					</div>
 					<div class="chat-box-line-face thumbnail">
-						<img src="/assets/media/noavatar.png" class="js-avatar">
+						{% if message.user.image == '' or message.user.image == None %}
+							<img src="{% static '/img/noavatar.png' %}" alt="fvdfv fvdfv" class="js-avatar">
+						{% else %}
+							<img src="/media/{{ message.user.image }}" alt="fvdfv fvdfv" class="js-avatar">
+						{% endif %}
 					</div>
 					<div class="chat-box-line-num">
 						<span class="js-flatnum">Председатель</span>
@@ -29,192 +37,40 @@
 					<div class="clearfix">
 						<div class="pull-left visible-xs">
 							<div class="chat-box-line-name">
-								<span class="js-name">Кравченко Иван</span> (<span class="js-flatnum">Председатель</span>)
+								<span class="js-name">{{ message.user }}</span> (<span class="js-flatnum">Председатель</span>)
 							</div>
 						</div>
 						<div class="pull-right">
 							<div class="chat-box-line-date">
-								<span class="js-datetime">16.04.2021 (10:33)</span>
+								<span class="js-datetime">{{ message.created_at|date:"d.m.Y (H:i)" }}</span>
 							</div>
 						</div>
 					</div>
 					<div class="chat-box-line-mess">
-						<span class="js-text">Barevner</span>
+						<span class="js-text">{{ message.text }}</span>
 					</div>
 				</div>
-			</div>
-		</div><div class="chat-box-line js-chat-line" data-id="32">
-			<div class="row">
-				<div class="col-xs-12 col-sm-2 hidden-xs">
-					<div class="chat-box-line-name">
-						<span class="js-name">Кравченко Иван</span>
-					</div>
-					<div class="chat-box-line-face thumbnail">
-						<img src="/assets/media/noavatar.png" class="js-avatar">
-					</div>
-					<div class="chat-box-line-num">
-						<span class="js-flatnum">Председатель</span>
+			</div></div>
+		{% endfor %}	
+		
+		</div>
+		</div>
+	<div class="panel panel-success">
+		<div class="panel-body">
+			<form  class="js-chat-message-form" action=".">
+				{% csrf_token %}
+				<div class="mb-15">
+					{{form.text}}
+				</div>
+				<div class="clearfix">
+					<div class="pull-right">
+						<button type="submit" class="btn btn-success" id="send_chat_message">Отправить</button>
 					</div>
 				</div>
-				<div class="col-xs-12 col-sm-10">
-					<div class="clearfix">
-						<div class="pull-left visible-xs">
-							<div class="chat-box-line-name">
-								<span class="js-name">Кравченко Иван</span> (<span class="js-flatnum">Председатель</span>)
-							</div>
-						</div>
-						<div class="pull-right">
-							<div class="chat-box-line-date">
-								<span class="js-datetime">16.04.2021 (10:33)</span>
-							</div>
-						</div>
-					</div>
-					<div class="chat-box-line-mess">
-						<span class="js-text">fref</span>
-					</div>
-				</div>
-			</div>
-		</div><div class="chat-box-line js-chat-line" data-id="31">
-			<div class="row">
-				<div class="col-xs-12 col-sm-2 hidden-xs">
-					<div class="chat-box-line-name">
-						<span class="js-name">Сергеев Сергей</span>
-					</div>
-					<div class="chat-box-line-face thumbnail">
-						<img src="/assets/media/avatars/05ca901203c39366ea65babd496d8bf0.jpg" class="js-avatar">
-					</div>
-					<div class="chat-box-line-num">
-						<span class="js-flatnum">Председатель</span>
-					</div>
-				</div>
-				<div class="col-xs-12 col-sm-10">
-					<div class="clearfix">
-						<div class="pull-left visible-xs">
-							<div class="chat-box-line-name">
-								<span class="js-name">Сергеев Сергей</span> (<span class="js-flatnum">Председатель</span>)
-							</div>
-						</div>
-						<div class="pull-right">
-							<div class="chat-box-line-date">
-								<span class="js-datetime">16.04.2021 (10:30)</span>
-							</div>
-						</div>
-					</div>
-					<div class="chat-box-line-mess">
-						<span class="js-text">ytyh</span>
-					</div>
-				</div>
-			</div>
-		</div><div class="chat-box-line js-chat-line" data-id="29">
-			<div class="row">
-				<div class="col-xs-12 col-sm-2 hidden-xs">
-					<div class="chat-box-line-name">
-						<span class="js-name">Сергеев Сергей</span>
-					</div>
-					<div class="chat-box-line-face thumbnail">
-						<img src="/assets/media/noavatar.png" class="js-avatar">
-					</div>
-					<div class="chat-box-line-num">
-						<span class="js-flatnum">Председатель</span>
-					</div>
-				</div>
-				<div class="col-xs-12 col-sm-10">
-					<div class="clearfix">
-						<div class="pull-left visible-xs">
-							<div class="chat-box-line-name">
-								<span class="js-name">Сергеев Сергей</span> (<span class="js-flatnum">Председатель</span>)
-							</div>
-						</div>
-						<div class="pull-right">
-							<div class="chat-box-line-date">
-								<span class="js-datetime">26.01.2021 (09:45)</span>
-							</div>
-						</div>
-					</div>
-					<div class="chat-box-line-mess">
-						<span class="js-text">Прювет </span>
-					</div>
-				</div>
-			</div>
-		</div><div class="chat-box-line js-chat-line" data-id="28">
-			<div class="row">
-				<div class="col-xs-12 col-sm-2 hidden-xs">
-					<div class="chat-box-line-name">
-						<span class="js-name">Кравченко Иван</span>
-					</div>
-					<div class="chat-box-line-face thumbnail">
-						<img src="/assets/media/noavatar.png" class="js-avatar">
-					</div>
-					<div class="chat-box-line-num">
-						<span class="js-flatnum">Председатель</span>
-					</div>
-				</div>
-				<div class="col-xs-12 col-sm-10">
-					<div class="clearfix">
-						<div class="pull-left visible-xs">
-							<div class="chat-box-line-name">
-								<span class="js-name">Кравченко Иван</span> (<span class="js-flatnum">Председатель</span>)
-							</div>
-						</div>
-						<div class="pull-right">
-							<div class="chat-box-line-date">
-								<span class="js-datetime">25.01.2021 (18:54)</span>
-							</div>
-						</div>
-					</div>
-					<div class="chat-box-line-mess">
-						<span class="js-text">Приве22222</span>
-					</div>
-				</div>
-			</div>
-		</div><div class="chat-box-line js-chat-line" data-id="27">
-			<div class="row">
-				<div class="col-xs-12 col-sm-2 hidden-xs">
-					<div class="chat-box-line-name">
-						<span class="js-name">Сергеев Сергей</span>
-					</div>
-					<div class="chat-box-line-face thumbnail">
-						<img src="/assets/media/noavatar.png" class="js-avatar">
-					</div>
-					<div class="chat-box-line-num">
-						<span class="js-flatnum">Председатель</span>
-					</div>
-				</div>
-				<div class="col-xs-12 col-sm-10">
-					<div class="clearfix">
-						<div class="pull-left visible-xs">
-							<div class="chat-box-line-name">
-								<span class="js-name">Сергеев Сергей</span> (<span class="js-flatnum">Председатель</span>)
-							</div>
-						</div>
-						<div class="pull-right">
-							<div class="chat-box-line-date">
-								<span class="js-datetime">25.01.2021 (18:54)</span>
-							</div>
-						</div>
-					</div>
-					<div class="chat-box-line-mess">
-						<span class="js-text">Привет111111</span>
-					</div>
-				</div>
-			</div>
-		</div></div>
-		<div class="panel panel-success">
-			<div class="panel-body">
-				<form action="client/chat/sendMessage" class="js-chat-message-form">
-					<input type="hidden" name="point" value="0">
-					<div class="mb-15">
-						<textarea name="text" id="" class="form-control" cols="30" rows="3" placeholder="Введите сообщение"></textarea>
-					</div>
-					<div class="clearfix">
-						<div class="pull-right">
-							<button type="submit" class="btn btn-success">Отправить</button>
-						</div>
-					</div>
-				</form>
-			</div>
+			</form>
 		</div>
 	</div>
+
 </div>
 
 <div class="hidden" id="templates">
@@ -226,7 +82,7 @@
 						<span class="js-name"></span>
 					</div>
 					<div class="chat-box-line-face thumbnail">
-						<img src="img/face.jpg" class="js-avatar">
+						<img src="/static/img/noavatar.png" class="js-avatar">
 					</div>
 					<div class="chat-box-line-num">
 						<span class="js-flatnum"></span>

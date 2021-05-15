@@ -24,14 +24,14 @@
                                     {% if moderator.image == '' or moderator.image == None %}
                                         <img src="{% static '/img/noavatar.png' %}" alt="fvdfv fvdfv">
                                     {% else %}
-                                        <img src="{{ moderator.image }}" alt="fvdfv fvdfv">
+                                        <img src="/media/{{ moderator.image }}" alt="fvdfv fvdfv">
                                     {% endif %}
                                 </span>
                             </div>
                             <div class="col-xs-8">
                                 <p>Председатель</p>
                                 <p><b>{{ moderator.first_name }} {{ moderator.last_name }}</b></p>
-                                <p>{{ moderator.phone_number }}</p>
+                                <p style="min-height: 18px;"> {{ moderator.phone_number }}</p>
                                 <p><a href="mailto:{{ organization_worker.email }}">{{ moderator.email }}</a></p>
                             </div>
                         </div>

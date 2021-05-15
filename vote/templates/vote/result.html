@@ -1,0 +1,88 @@
+{% extends 'main/main.html' %}
+{% block title %}Голосования. ДомОК{% endblock %}
+{% block navbar %}{% include 'main/navbar.html' with active_tab="vote" %}{% endblock %}
+{% block header %}{% include 'main/header.html' with homes=homes %}{% endblock %}
+{% block content %}   
+<div class="panel-body">
+    <p>Вопрос на голосование:</p>
+    <h4 class="text-primary"><b>{{ vote.question }}</b></h4>
+    <p><b>{{ vote.text }}</b></p>
+    <p class="text-right"><i>
+        {% if vote.is_active %}
+            Дата завершения голосования:
+        {% else %}
+            Завершено:
+        {% endif %}
+        {{ vote.end_date|date:"Y-m-d" }}</i></p>
+    {% if vote.is_active %}
+        <div class="row">
+            <div class="col-xs-12 col-md-6">
+                <table class="table table-bordered">
+                    <tbody><tr>
+                        <td>Всего проголосовало</td>
+                        <td><span class="text-uppercase"><b>{{vote.members_count}} / {{vote.members_count_percentage}}%</b></span></td>
+                    </tr>
+                </tbody></table>
+            </div>
+        </div>
+    {% else %}
+    <div class="row">
+        <div class="col-xs-12 col-md-6">
+            <table class="table table-bordered">
+                <tbody><tr>
+                    <td>Статус</td>
+                    {% if vote.members_count_percentage >= vote.quorum %}
+                    <td><span class="text-danger"><b>Завершен</b></span></td>
+                    {% else %}
+                    <td><span class="text-warning"><b>Не состоялось</b></span></td>
+                    {% endif %}
+                </tr>
+                <tr>
+                    <td>Всего проголосовало</td>
+                    <td><span class="text-uppercase"><b>{{vote.members_count_percentage}}%</b></span></td>
+                </tr>
+                <tr>
+                    <td>Ваш Вклад</td>
+                    <td>
+                        {% if vote.highest_vote == 1 %}
+                        <span class="text-success text-uppercase"><b>ЗА</b></span>
+                        {% elif vote.highest_vote == 2 %}
+                        <span class="text-danger text-uppercase"><b>ПРОТИВ</b></span>
+                        {% elif vote.highest_vote == 3 %}
+                        <span class="text-warning text-uppercase"><b>ВСЕ РАВНО</b></span>
+                        {% else %}
+                        <span class="text-uppercase"><b>НЕ УЧАСТВОВАЛИ</b></span>
+                        {% endif %}
+                    </td>
+                </tr>
+            </tbody></table>
+            <table class="table table-bordered">
+                <tbody><tr>
+                    <td><span class="text-success text-uppercase"><b>За</b></span></td>
+                    <td><b>{{ vote.for_sum }}%</b></td>
+                    <td><b>{{ vote.for_sum_square }} м<sup>2</sup></b></td>
+                </tr>
+                <tr>
+                    <td><span class="text-danger text-uppercase"><b>Против</b></span></td>
+                    <td><b>{{ vote.against_sum }}%</b></td>
+                    <td><b>{{ vote.against_sum_square }} м<sup>2</sup></b></td>
+                </tr>
+                <tr>
+                    <td><span class="text-warning text-uppercase"><b>Все равно</b></span></td>
+                    <td><b>{{ vote.abstain_sum  }}%</b></td>
+                    <td><b>{{ vote.abstain_sum_square }} м<sup>2</sup></b></td>
+                </tr>
+            </tbody>
+        </table>
+        {% if vote.is_past_due %}
+            <a href="{% url 'vote:members' vote.id%}" class="btn btn-lg btn-success">Список участников</a>
+        {% endif %}
+        </div>
+        <div class="col-xs-12 col-md-6">
+            <div id="piechart" style="width: 280px; height: 280px;margin: 0 auto; padding-left: 10px;" 
+            data-vote-0="{{ vote.for_sum|floatformat:0 }}" data-vote-1="{{ vote.against_sum|floatformat:0 }}" data-vote-2="{{ vote.abstain_sum|floatformat:0  }}">
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

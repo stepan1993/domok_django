@@ -1,0 +1,55 @@
+
+{% extends 'main/main.html' %}
+{% block title %}Голосования. ДомОК{% endblock %}
+{% block navbar %}{% include 'main/navbar.html' with active_tab="vote" %}{% endblock %}
+{% block header %}{% include 'main/header.html' with homes=homes %}{% endblock %}
+{% block content %}  
+<div class="alert alert-success text-center">
+	<h4 class="mb-0 mb-xs-15">Участники голосования</h4>
+	<div class="row">
+		<div class="col-xs-12 col-sm-6">
+			<p class="text-left text-left text-center-xs mb-0 mb-xs-15">Вопрос: {{ vote.question }}</p>
+		</div>
+		<div class="col-xs-12 col-sm-6">
+			<p class="text-right text-right text-center-xs mb-0">Закрыто {{ vote.end_date|date:"d.m.Y"}}</p>
+		</div>
+	</div>
+</div>
+
+<div class="panel panel-default">
+	<div class="panel-body">
+		<div class="table-responsive">
+			<table class="table table-striped table-hover">
+				<thead>
+				<tr>
+					<th width="40%">ФИО</th>
+					<th width="10%">№ кв.</th>
+					<th width="10%">S кв.</th>
+					<th width="30%">Голос</th>
+					<th width="10%">Вклад</th>
+				</tr>
+				</thead>
+				<tbody>
+					{% for member in members %}
+					<tr>
+						<td>{{ member.member.last_name }} {{ member.member.first_name }} {{ member.member.middle_name }}</td>
+						<td>{{ member.user_appartment }}</td>
+						<td>{{ member.user_total_square }}</td>
+						<td>{{ member.user_vote }}</td>
+						<td>
+							{% if member.point == 1 %}
+								<span class="label label-block label-success">за</span>
+							{% elif member.point == 2 %}
+								<span class="label label-block label-danger">против</span>
+							{% elif member.point == 3 %}
+								<span class="label label-block label-warning">все равно</span>
+							{% endif %}
+						</td>
+					</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+{% endblock %}

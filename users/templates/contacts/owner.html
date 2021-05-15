@@ -1,0 +1,206 @@
+{% extends 'main/main.html' %}
+{% load static %}
+{% block header %}{% include 'main/header.html' with homes=homes %}{% endblock %}
+{% block title %}Собственники. ДомОК{% endblock %}
+{% block navbar %}{% include 'main/navbar.html' with active_tab="owners" %}{% endblock %}
+{% block content %}
+<div class="alert alert-success text-center">
+    <div class="row">
+        <div class="col-xs-12 col-sm-4 col-sm-offset-4">
+            <h4 class="mb-0 mb-xs-15">Собственники: просмотр и редактирование</h4>
+        </div>
+    </div>
+</div>
+<div class="panel panel-default">
+	<div class="panel-body">
+		<div class="row">
+			<form method="post" enctype="multipart/form-data"  id="id_ajax_upload_form">
+				<input type="hidden" name="subAction" value="uploadAvatar">
+				<input type="hidden" name="clientkey" value="464d27c9ef3d9a72c8d67515ba5a2b14">
+				<div class="col-xs-12 col-sm-3 col-md-2">
+					<div class="mb-25">
+						<span class="thumbnail upload-wrapper">
+							{% if custom_user.image == '' or custom_user.image == None %}
+								<img src="{% static '/img/noavatar.png' %}" alt="fvdfv fvdfv" class="profile_image">
+							{% else %}
+								<img src="/media/{{ custom_user.image }}" alt="fvdfv fvdfv" class="profile_image">
+							{% endif %}
+						</span>
+							{% csrf_token %}
+							<div class="upload-button btn btn-block btn-default">
+								{{ image_form }}
+								<span class="upload-button__text">Выбрать фото</span>
+							</div>	
+					</div>
+				</div>
+			</form>
+				<div class="col-xs-12 col-sm-9 col-md-10">
+					<form method="post">
+					<input type="hidden" name="subAction" value="changeProfile">
+					<h4>Персональные данные</h4>
+					{% csrf_token %}
+					<div class="row">
+						<div class="col-xs-12 col-sm-4 col-md-4">
+							<div class="mb-15">
+								<label for="">Фамилия</label>
+								{{ profile_form.last_name }}
+							</div>
+						</div>
+						<div class="col-xs-12 col-sm-4 col-md-4">
+							<div class="mb-15">
+								<label for="">Имя</label>
+								{{ profile_form.first_name }}
+							</div>
+						</div>
+						<div class="col-xs-12 col-sm-4 col-md-4">
+							<div class="mb-15">
+								<label for="">Отчество</label>
+								{{ profile_form.middle_name }}
+							</div>
+						</div>
+					</div>
+					<div class="row" style="border-bottom: 1px solid #efefef; margin-bottom: 15px;">
+						<div class="col-xs-12 col-sm-6 col-md-4">
+							<div class="mb-15">
+								<label for="">Логин</label>
+								{{ profile_form.username }}
+							</div>
+						</div>
+						<div class="col-xs-12 col-sm-6 col-md-4">
+							<div class="mb-15">
+								<label for="">Телефон</label>
+								<div class="input-group">
+									<span class="input-group-addon" id="basic-addon1">
+										<span class="glyphicon glyphicon-phone" aria-hidden="true"></span>
+									</span>
+									{{ profile_form.phone_number }}
+								</div>
+							</div>
+						</div>
+						<div class="col-xs-12 col-sm-6 col-md-4">
+							<div class="mb-15">
+								<label for="">E-mail</label>
+								<div class="input-group">
+									<span class="input-group-addon" id="basic-addon1">@</span>
+									{{ profile_form.email }}
+									
+								</div>
+								<span class="error-message-span">
+									{% if profile_form.email.errors %}
+										<span class="my-error-message">{{ profile_form.email.errors }}</span>
+									{% endif %}
+								</span>
+								
+							</div>
+						</div>
+					</div>
+					<div class="row" style="border-bottom: 1px solid #efefef; margin-bottom: 15px;">
+						<div class="col-xs-12 col-sm-6 col-md-4">
+							<div class="mb-15">
+								<input type="text" class="form-control" placeholder="{{ account.object.street.city }}" disabled="">
+							</div>
+						</div>
+						<div class="col-xs-12 col-sm-6 col-md-4">
+							<div class="mb-15">
+								<input type="text" class="form-control" placeholder="{{ account.object.street }}" disabled="">
+							</div>
+						</div>
+						<div class="col-xs-12 col-sm-3 col-md-2">
+							<div class="mb-15">
+								<input type="text" class="form-control" placeholder="д.{{ account.object.home }}" disabled="">
+							</div>
+						</div>
+						<div class="col-xs-6 col-sm-3 col-md-2">
+							<div class="mb-15">
+								<input type="text" class="form-control" placeholder="кв. {{ account.object.appartment }}" disabled="">
+							</div>
+						</div>
+						<div class="col-xs-6 col-sm-6 col-md-4">
+							<div class="mb-15">
+								<input type="text" class="form-control" placeholder="л/с {{ account.account }}" disabled="">
+							</div>
+						</div>
+						<div class="col-xs-12 col-sm-6 col-md-4">
+							<div class="mb-15">
+								<input type="text" class="form-control" placeholder="S кв. = {{ account.total_square }} м.кв." disabled="">
+							</div>
+						</div>
+						<div class="col-xs-12 col-sm-6 col-md-4">
+							<div class="mb-15">
+								<input type="text" class="form-control" placeholder="Голосующая доля {{ account.share }}" disabled="">
+							</div>
+						</div>
+					</div>
+					<h4>Статус и пароль</h4>
+					<div class="row">
+                        <div class="col-xs-12 col-sm-6 col-md-4">
+							<div class="mb-15">
+								<label>Статус</label>
+								{{ profile_form.is_active }}
+							</div>
+						</div>
+						<div class="col-xs-12 col-sm-6 col-md-4">
+							<div class="mb-15">
+								<label for="">Новый пароль</label>
+								<div class="input-group">
+									<span class="input-group-addon" id="basic-addon1">
+										<span class="glyphicon glyphicon-asterisk" aria-hidden="true"></span>
+									</span>
+									{{ profile_form.password1 }}
+									{{ profile_form.errors }}
+								</div>
+							</div>
+						</div>
+						
+						<div class="col-xs-12 col-sm-6 col-md-4">
+                            
+							<div class="mb-15">
+								<label for="">Новый пароль еще раз</label>
+								<div class="input-group">
+									<span class="input-group-addon" id="basic-addon1">
+										<span class="glyphicon glyphicon-asterisk" aria-hidden="true"></span>
+									</span>
+									{{ profile_form.password2 }}
+								</div>
+								<span class="error-message-span">
+									{% if profile_form.password2.errors %}
+										<span class="my-error-message">{{ profile_form.password2.errors }}</span>
+									{% endif %}
+								</span>
+							</div>
+						</div>
+					</div>
+					<div class="clearfix">
+						<div class="pull-right">
+							<button type="submit" class="btn btn-success">Сохранить</button>
+						</div>
+					</div>
+
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+<input class="hidden hidden_custom_user" value="{{ custom_user.id }}">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script type="text/javascript">
+ // form upload
+ $('#id_ajax_upload_form').change(function(e){
+	 e.preventDefault();
+	 $form = $(this)
+	 var formData = new FormData(this);
+	 $.ajax({
+		 url: '/users/upload-owner-image/'+$('.hidden_custom_user').val(),
+		 type: 'POST',
+		 data: formData,
+		 success: function (response) {
+			 $('.profile_image').attr('src',response)
+		 },
+		 cache: false,
+		 contentType: false,
+		 processData: false
+	 });
+ });
+ // end
+</script>
+{% endblock %}

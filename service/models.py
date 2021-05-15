@@ -4,10 +4,10 @@ from phonenumber_field.modelfields import PhoneNumberField
 from location.models import Object
 
 class Service(models.Model):
-    name = models.CharField(max_length=255,null=False, blank=False,verbose_name="Название")
-    nominative = models.CharField(max_length=255,null=False, blank=False,verbose_name="Именительный падеж")
-    genitive = models.CharField(max_length=255,null=False, blank=False,verbose_name="Родительный падеж")
-    dative = models.CharField(max_length=255,null=False, blank=False,verbose_name="Дательный падеж")
+    name = models.CharField(unique=True,max_length=255,null=False, blank=False,verbose_name="Название")
+    nominative = models.CharField(unique=True,max_length=255,null=False, blank=False,verbose_name="Именительный падеж")
+    genitive = models.CharField(unique=True,max_length=255,null=False, blank=False,verbose_name="Родительный падеж")
+    dative = models.CharField(unique=True,max_length=255,null=False, blank=False,verbose_name="Дательный падеж")
 
     def __str__(self):
         return self.name
@@ -16,7 +16,7 @@ class Service(models.Model):
         verbose_name="Услуга"
 
 class Organization(models.Model):
-    name = models.CharField(max_length=255,null=False, blank=False,verbose_name="Название")
+    name = models.CharField(unique=True,max_length=255,null=False, blank=False,verbose_name="Название")
     inn = models.CharField(max_length=255,null=True, blank=True,verbose_name="ИНН")
     description = models.TextField(null=True, blank=True,verbose_name="Описание")
 
