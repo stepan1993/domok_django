@@ -30,7 +30,7 @@
             </ul>
             {% if current %}
                 <p style="color: #339933;">
-                    {% if request.user.role == "moderator" %}
+                    {% if request.user.role == "moderator"  or request.user.role == "worker" %}
                         Кабинет руководителя:
                     {% else %}
                         Электронная квартира:

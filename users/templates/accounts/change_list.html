@@ -1,0 +1,31 @@
+{% extends "admin/change_list.html" %}
+{% load i18n admin_urls %}
+
+{% block content %}
+<form method="post" enctype="multipart/form-data", action="/users/upload-fakturas/">
+    {% csrf_token %}
+    <select name="year" class="form-control">
+        <option value="2020">2020</option>
+        <option value="2021" selected="">2021</option>
+    </select>
+    <select name="month" class="form-control">
+        <option value="0"></option>
+        <option value="1">Январь</option>
+        <option value="2">Февраль</option>
+        <option value="3">Март</option>
+        <option value="4" selected="">Апрель</option>
+        <option value="5">Май</option>
+        <option value="6">Июнь</option>
+        <option value="7">Июль</option>
+        <option value="8">Август</option>
+        <option value="9">Сентябрь</option>
+        <option value="10">Октябрь</option>
+        <option value="11">Ноябрь</option>
+        <option value="12">Декабрь</option>
+    </select>
+    <input type="file" name="file" class="form-control" required="">
+    <input type="submit" name="submit" value="Загрузить фактуры" />
+</form>
+{{ block.super }}
+
+{% endblock %}

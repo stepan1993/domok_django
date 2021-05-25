@@ -3,8 +3,8 @@ from .models import Comment, Ticket, TicketFile
 from django import forms
 
 class TicketForm(forms.ModelForm):
-    whom = forms.ModelChoiceField(queryset = Service.objects.all(),
-                    widget=forms.Select(attrs={'class': "form-control",'placeholder': 'Кому'}))
+    whom = forms.ModelChoiceField(queryset = Service.objects.all(),empty_label="Кому____",
+                    widget=forms.Select(attrs={'class': "form-control"}))
     problem = forms.CharField(required=True, max_length=100, widget=forms.TextInput(
                                 attrs={'class': "form-control",'placeholder': 'Проблема'}))
     description = forms.CharField(required=False,widget=forms.Textarea(
@@ -22,7 +22,6 @@ class TicketForm(forms.ModelForm):
         ticket.object_id = self.cleaned_data['object_id']
         ticket.save()
         return ticket
-
 
 class CommentForm(forms.ModelForm):
     comment = forms.CharField(required=False,widget=forms.Textarea(

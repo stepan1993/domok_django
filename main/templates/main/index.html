@@ -3,7 +3,7 @@
 {% block header %}{% include 'main/header.html' with homes=homes %}{% endblock %}
 {% block navbar %}{% include 'main/navbar.html' with active_tab="index" %}{% endblock %}
 {% block content %}     
-    {% if request.user.role == "moderator" %}
+    {% if request.user.role == "moderator"  or request.user.role == "worker" %}
         <div class="panel panel-default">
             <div class="panel-body text-right">
                 <a href="{% url 'news:edit' 0 %}" class="btn btn-success">Добавить новость</a>

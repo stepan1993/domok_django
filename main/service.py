@@ -15,6 +15,18 @@ def get_homes(request):
                 request.session['current_object'] = current.id
             obj['homes'] = homes.exclude(id=current.id)
             obj['current'] = current
+    elif request.user.role == "worker":
+        current_object = request.session.get('current_object')
+        homes = Object.objects.filter(object_organization__organization__organization_workers__worker_id = request.user.id)
+        if homes.count()>0:
+            current=None
+            if current_object:
+                current = homes.get(id=current_object)
+            else:
+                current = homes.first()
+                request.session['current_object'] = current.id
+            obj['homes'] = homes.exclude(id=current.id)
+            obj['current'] = current
     elif request.user.role == "client":
         try:
             object_id = Account.objects.get(custom_user=request.user).object_id

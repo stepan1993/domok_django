@@ -3,18 +3,21 @@ from main.service import get_homes
 from django.shortcuts import render, redirect
 from .models import *
 from django.urls import reverse
+from django.contrib.auth.decorators import login_required
 STATUSES = {
     1:"На рассмотрении",
     2:"На рассмотрении",
     3:"Выполнено"
 }
 
+@login_required(login_url="/accounts/login/")
 def ticket(request):
     tickets = Ticket.objects.filter(object_id = request.session.get('current_object')).order_by('-id')
     homes = get_homes(request)
     context = {"homes":homes['homes'], "current":homes['current'],"tickets":tickets}
     return render(request,'ticket/ticket.html',context)
 
+@login_required(login_url="/accounts/login/")
 def details(request, pk):
     ticket = Ticket.objects.get(id = pk)
     ticket_files = ticket.ticket_files.all()
@@ -40,7 +43,8 @@ def details(request, pk):
     context = {"homes":homes['homes'], "current":homes['current'],"ticket":ticket, 
                     "status":status,"ticket_files":ticket_files,"comment_form":form,"comments":comments}
     return render(request,'ticket/details.html',context)
-    
+
+@login_required(login_url="/accounts/login/") 
 def add(request):
     initials = {"author_id":request.user.id,'object_id': request.session.get('current_object')}
     form = TicketForm(initial=initials)

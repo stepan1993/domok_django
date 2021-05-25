@@ -1,5 +1,6 @@
+from users.services import get_years
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
-from .models import ACTIVE_STATUS, Account,  CustomUser
+from .models import ACTIVE_STATUS, MONTH_CHOICES, Account,  CustomUser, Faktura
 from django import forms
 
 class ProfileForm(forms.ModelForm):
@@ -112,7 +113,6 @@ class RegistrationForm(forms.ModelForm):
         account.custom_user_id = user.id
         account.save()
         
-
 class OwnerForm(forms.ModelForm):
     first_name = forms.CharField(max_length=100, widget=forms.TextInput(attrs={'class': "form-control",'placeholder': 'Имя'}))
     last_name = forms.CharField(max_length=100,widget=forms.TextInput(attrs={'class': "form-control",'placeholder': 'Фамилия'}))

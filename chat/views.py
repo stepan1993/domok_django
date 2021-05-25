@@ -4,7 +4,9 @@ from main.service import get_homes
 from django.shortcuts import render
 from .models import *
 import datetime
+from django.contrib.auth.decorators import login_required
 
+@login_required(login_url="/accounts/login/")
 def chat(request):
     try:
         messages = ChatMessage.objects.filter(object_id=request.session.get('current_object'))

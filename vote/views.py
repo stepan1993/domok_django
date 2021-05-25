@@ -4,9 +4,11 @@ from main.service import get_homes
 from django.shortcuts import redirect, render
 from .models import *
 from django.urls import reverse
+from django.contrib.auth.decorators import login_required
 
+@login_required(login_url="/accounts/login/")
 def vote(request):
-    if request.user.role == "moderator":
+    if request.user.role == "moderator"  or request.user.role == "worker":
         votes = Vote.objects.filter(object_id=request.session.get('current_object'))
     else:
         votes = Vote.objects.filter(start_date__lte=datetime.date.today(),object_id=request.session.get('current_object'))
@@ -17,6 +19,7 @@ def vote(request):
     context = {"homes":homes['homes'], "current":homes['current'],"votes":votes.order_by('-id'),"search_word":search_word}
     return render(request,'vote/vote.html',context)
 
+@login_required(login_url="/accounts/login/")
 def add(request, id):
     initials = {"created_by_id":request.user.id,'object_id':request.session.get('current_object')}
     vote = Vote.objects.get(id=id) if id!=0 else None
@@ -33,6 +36,7 @@ def add(request, id):
     context = {"homes":homes['homes'], "current":homes['current'],"form":form}
     return render(request,'vote/add.html',context)
 
+@login_required(login_url="/accounts/login/")
 def set_vote(request, id):
     vote = Vote.objects.get(id=id)
     try:
@@ -52,12 +56,14 @@ def set_vote(request, id):
     context = {"homes":homes['homes'], "current":homes['current'],"vote":vote,"vote_member":vote_member}
     return render(request,'vote/set-vote.html',context)
 
+@login_required(login_url="/accounts/login/")
 def result(request, id):
     vote = Vote.objects.get(id=id)  
     homes = get_homes(request)
     context = {"homes":homes['homes'], "current":homes['current'],"vote":vote}
     return render(request,'vote/result.html',context)
 
+@login_required(login_url="/accounts/login/")
 def members(request, id):
     vote = Vote.objects.get(id=id)  
     members = vote.vote_members.all()    

@@ -1,6 +1,7 @@
 from .models import Vote, VOTE_TYPES, QUORUM_CHOICES
 from django import forms
 from datetime import datetime,date
+
 class VoteForm(forms.ModelForm):
     question = forms.CharField(required=True, max_length=100, widget=forms.TextInput(
                                 attrs={'class': "form-control",'placeholder': 'Вопрос'}))

@@ -10,7 +10,7 @@
 		<div class="col-xs-12 col-sm-4 col-sm-offset-4">
 			<h4 class="mb-0 mb-xs-15">Голосования</h4>
 		</div>
-		{% if request.user.role == "moderator" %}
+		{% if request.user.role == "moderator"  or request.user.role == "worker" %}
 			<div class="col-xs-12 col-sm-4">
 				<a href="{% url 'vote:add' 0 %}" class="btn btn-primary btn-xs">Добавить голосование</a>					
 			</div>
@@ -52,7 +52,7 @@
 							{% if vote.is_future_due %}
 								<td><a href="{% url 'vote:add' vote.id %}">{{ vote.question }}</a></td>
 							{% elif vote.is_active %}
-								{% if request.user.role == "moderator" %}
+								{% if request.user.role == "moderator"  or request.user.role == "worker" %}
 									<td><a href="{% url 'vote:result' vote.id %}">{{ vote.question }}</a></td>
 								{% else %}
 									<td><a href="{% url 'vote:set-vote' vote.id %}">{{ vote.question }}</a></td>
@@ -65,7 +65,7 @@
 							{% if vote.is_future_due %}
 								<td><span class="label label-block label-info"><b>Скоро</b></span></td>
 							{% elif vote.is_past_due %}
-								{% if request.user.role == "moderator" %}
+								{% if request.user.role == "moderator"  or request.user.role == "worker" %}
 									<td><span class="label label-block label-danger">Завершен</span></td>
 								{% else %}
 									{% if vote.members_count_percentage >= vote.quorum %}

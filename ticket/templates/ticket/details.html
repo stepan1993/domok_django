@@ -45,7 +45,7 @@
 		</div>
 	</div>
 </div>
-{% if request.user.role == "moderator" %}
+{% if request.user.role == "moderator"  or request.user.role == "worker" %}
 
 <div class="panel panel-default">
 	<div class="panel-body">

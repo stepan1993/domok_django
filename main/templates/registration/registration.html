@@ -43,6 +43,11 @@
                                 </span>
                                 {{ form.phone_number }}
                             </div>
+                            <span class="error-message-span">
+                                {% if form.phone_number.errors %}
+                                    <span class="my-error-message">{{ form.phone_number.errors }}</span>
+                                {% endif %}
+                            </span>
                         </div>
                     </div>
                     <div class="col-xs-12 col-sm-6">

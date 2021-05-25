@@ -1,0 +1,56 @@
+{% extends 'main/main.html' %}
+{% block navbar %}{% include 'main/navbar.html' with active_tab="accounts" %}{% endblock %}
+{% block title %}Счета. ДомОК{% endblock %}
+{% block header %}{% include 'main/header.html' with homes=homes %}{% endblock %}
+{% block content %}
+<div class="alert alert-success text-center">
+    <div class="row">
+        <div class="col-xs-12 col-sm-4 col-sm-offset-4">
+            <h4 class="mb-0 mb-xs-15">Загрузка счетов</h4>
+        </div>
+    </div>
+</div>
+<div class="panel panel-default">
+	<div class="panel-body">
+		<form method="post" enctype="multipart/form-data">
+			<div class="form-inline">
+				<div class="form-inline">
+					<select name="year" class="form-control">
+	
+						<option value="2020">2020</option>
+						<option value="2021" selected="">2021</option>
+					</select>
+					<select name="month" class="form-control">
+												<option value="0"></option>
+												<option value="1">Январь</option>
+												<option value="2">Февраль</option>
+												<option value="3">Март</option>
+												<option value="4" selected="">Апрель</option>
+												<option value="5">Май</option>
+												<option value="6">Июнь</option>
+												<option value="7">Июль</option>
+												<option value="8">Август</option>
+												<option value="9">Сентябрь</option>
+												<option value="10">Октябрь</option>
+												<option value="11">Ноябрь</option>
+												<option value="12">Декабрь</option>
+										</select>
+					<input type="file" name="file" class="form-control" required="">
+					<button class="btn btn-success"><i class="fa fa-excel"></i> Импортировать</button>
+					<span class="error-message-span unmargin">
+						{% if errors %}
+							<span class="my-error-message">{{ errors }}</span>
+						{% endif %}
+					</span>
+				</div>
+				
+				<span class="error-message-span">
+					{% if form.file.errors %}
+						<span class="my-error-message">{{ form.file.errors }}</span>
+					{% endif %}
+				</span>
+			</div>
+		</form>
+	</div>
+</div>
+{% endblock %}

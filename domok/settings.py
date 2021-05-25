@@ -12,7 +12,7 @@ SECRET_KEY = '66+1-v0d1vasrotx@s%&0d**mwejz5g8ouen($4uh7(rw1%-0+'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -24,7 +24,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    "bootstrap4",
     'phonenumber_field',
     'django_cascading_dropdown_widget',
     'ckeditor',
@@ -79,15 +78,26 @@ WSGI_APPLICATION = 'domok.wsgi.application'
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'domok',
+#         'USER': 'root',
+#         'PASSWORD': '',
+#         'HOST': 'localhost', 
+#         'PORT': '3306',
+#         'OPTIONS': {}
+#     }
+# }
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'domok',
-        'USER': 'root',
-        'PASSWORD': '',
-        'HOST': 'localhost', 
+        'USER': 'user1',
+        'PASSWORD': 'user1',
+        'HOST': '46.101.179.50', 
         'PORT': '3306',
-        'OPTIONS': {}
+        'OPTIONS': {'charset': 'utf8mb4'}
     }
 }
 
@@ -150,9 +160,8 @@ EMAIL_BACKEND ="django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = "smtp.gmail.com"
 EMAIL_USE_TLS = True
 EMAIL_PORT = 587
-EMAIL_HOST_USER = "stepankakosyan22@gmail.com"
-EMAIL_HOST_PASSWORD = "Gyumri22++"
-EMAIL_FROM = "stepankakosyan22@gmail.com"
+EMAIL_HOST_USER = "domok.create@gmail.com"
+EMAIL_HOST_PASSWORD = "domok.create123"
+EMAIL_FROM = "domok.create@gmail.com"
 
 CORS_ORIGIN_ALLOW_ALL=True
-APPEND_SLASH= False

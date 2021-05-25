@@ -1,7 +1,7 @@
 
 from django.contrib import admin
-from .models import Account, Administrator, Client,  Moderator, Worker
-
+from .models import Account, Administrator, Client,  Moderator, Worker, Faktura
+from django.utils.html import format_html
 
 @admin.register(Client)
 class Client(admin.ModelAdmin):
@@ -64,4 +64,31 @@ class Moderator(admin.ModelAdmin):
 
 @admin.register(Account)
 class Account(admin.ModelAdmin):
-    change_list_template = 'users/change_list.html'
+        change_list_template = 'users/change_list.html'
+        list_display = ('account', 'user_full_name','share','address')
+        # list_display_links = ['account','address']
+        def user_full_name(self,obj):
+                return f"{obj.custom_user.last_name} {obj.custom_user.first_name} {obj.custom_user.middle_name} "
+        def address(self,obj):
+                return f"{obj.object}"
+        user_full_name.short_description="ФИО"
+        address.short_description="Адрес"
+
+@admin.register(Faktura)
+class Faktura(admin.ModelAdmin):
+        change_list_template = 'accounts/change_list.html'
+        list_display = ('account_name', 'year','month','download_button')
+        readonly_fields = ['account_name',"created_at","created_by",'file_name']
+        exclude = ["file"]
+        list_per_page = 10
+        
+        def download_button(self, obj):
+                return format_html('<span style="width:100%; display:flex; justify-content:flex-end">\
+                        <a class="button"  href="/media/{}">Скачать</a>\
+                        </span>', obj.file, obj.id)
+        download_button.short_description=""
+        
+        def file_name(self, obj):
+                return format_html('<a class="button"  href="/media/{}">Скачать</a>', obj.file)
+        download_button.short_description=""
+        file_name.short_description="Файл"

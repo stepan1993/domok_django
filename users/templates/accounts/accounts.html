@@ -12,46 +12,102 @@
 </div>
 <div class="panel panel-default">
 <div class="panel-body">
-<form method="get" action="client/faktura/list">
-<div class="form-inline">
-<select name="month" class="form-control">
-    <option value="">Выберите месяц</option>
-    <option value="1">Январь</option>
-    <option value="2">Февраль</option>
-    <option value="3">Март</option>
-    <option value="4">Апрель</option>
-    <option value="5">Май</option>
-    <option value="6">Июнь</option>
-    <option value="7">Июль</option>
-    <option value="8">Август</option>
-    <option value="9">Сентябрь</option>
-    <option value="10">Октябрь</option>
-    <option value="11">Ноябрь</option>
-    <option value="12">Декабрь</option>
-</select>
-<select name="year" class="form-control">
-    <option value="">Выберите год</option>
-                            <option value="2021">2021</option>
-                            <option value="2020">2020</option>
-                            <option value="2019">2019</option>
-                            <option value="2018">2018</option>
-                    </select>
-<button class="btn btn-success">Найти</button>
-</div>
-</form>
+    {% if request.user.role == "client" %}
+    <form method="get">
+        <div class="form-inline">
+            <select name="month" class="form-control">
+                <option value="">Выберите месяц</option>
+                <option value="1">Январь</option>
+                <option value="2">Февраль</option>
+                <option value="3">Март</option>
+                <option value="4">Апрель</option>
+                <option value="5">Май</option>
+                <option value="6">Июнь</option>
+                <option value="7">Июль</option>
+                <option value="8">Август</option>
+                <option value="9">Сентябрь</option>
+                <option value="10">Октябрь</option>
+                <option value="11">Ноябрь</option>
+                <option value="12">Декабрь</option>
+            </select>
+            <select name="year" class="form-control">
+                <option value="">Выберите год</option>
+                                        <option value="2021">2021</option>
+                                        <option value="2020">2020</option>
+                                        <option value="2019">2019</option>
+                                        <option value="2018">2018</option>
+            </select>
+            <button class="btn btn-success">Найти</button>
+        </div>
+    </form>
+    {% elif request.user.role == "moderator"  or request.user.role == "worker" %}
+    <form method="get">
+        <div class="form-inline">
+            <select name="month" class="form-control">
+                <option value="">Выберите месяц</option>
+                <option value="1" {% if filters.month == 1 %} selected {% endif %}>Январь</option>
+                <option value="2" {% if filters.month == 2 %} selected {% endif %}>Февраль</option>
+                <option value="3" {% if filters.month == 3 %} selected {% endif %}>Март</option>
+                <option value="4" {% if filters.month == 4 %} selected {% endif %}>Апрель</option>
+                <option value="5" {% if filters.month == 5 %} selected {% endif %}>Май</option>
+                <option value="6" {% if filters.month == 6 %} selected {% endif %}>Июнь</option>
+                <option value="7" {% if filters.month == 7 %} selected {% endif %}>Июль</option>
+                <option value="8" {% if filters.month == 8 %} selected {% endif %}>Август</option>
+                <option value="9" {% if filters.month == 9 %} selected {% endif %}>Сентябрь</option>
+                <option value="10" {% if filters.month == 10 %} selected {% endif %}>Октябрь</option>
+                <option value="11" {% if filters.month == 11 %} selected {% endif %}>Ноябрь</option>
+                <option value="12" {% if filters.month == 12 %} selected {% endif %}>Декабрь</option>
+            </select>
+            {{years|safe}}
+            <input type="text" name="name" placeholder="ФИО" value="{{ filters.name }}" class="form-control" style="width: 150px;">
+            <input type="text" name="appartment" placeholder="№" value="{{ filters.appartment }}" class="form-control" style="width: 50px;">
+            <input type="text" name="account" placeholder="Лицевой счет" value="{{ filters.account }}" class="form-control" style="width: 120px;">
+            <button class="btn btn-success">Найти</button>
+            <a href="{% url 'users:upload-faktura' %}" class="btn btn-info" style="float: right;">Загрузить</a>
+        </div>
+    </form>
+    {% endif %}
 <hr>
 <div class="table-responsive">
 <table class="table table-striped table-hover">
-<tbody>
-                <tr>
-    <td style="width: 100px;">303500003</td>
-    <td style="width: 50px;">2019</td>
-    <td>Июль</td>
-    <td style="width:60px;">
-        <a href="data/facturas/2019-07_303500003.xlsx" class="btn btn-xs btn-success">Скачать</a>
-    </td>
-</tr>
-                </tbody>
+
+    {% if request.user.role == "client" %}
+    <tbody>
+        {% for faktura in fakturas %}
+        <tr>
+            <td style="width: 100px;">{{ faktura.account }}</td>
+            <td style="width: 50px;">{{ faktura.year }}</td>
+            <td>{{ faktura.month_name }}</td>
+            <td style="width:60px;">
+                <a href="/media/{{ faktura.file }}" class="btn btn-xs btn-success">Скачать</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+    {% elif request.user.role == "moderator"   or request.user.role == "worker"%}
+    <thead>
+        <tr>
+            <th width="40%">ФИО</th>
+            <th width="12%">№ кв.</th>
+            <th width="18%">Дата</th>
+            <th width="15%">Лицевой счет</th>
+            <th width="15%"></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for faktura in fakturas %}
+            <tr>
+                <td>{{ faktura.user_name }}</td>
+                <td>{{ faktura.appartment }}</td>
+                <td>{{ faktura.year }} / {{ faktura.month_name }}</td>
+                <td>{{ faktura.account }}</td>
+                <td>
+                <a href="/media/{{ faktura.file }}" class="btn btn-xs btn-success btn-block">Скачать</a>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    {% endif %}
 </table>
 </div>
 <div class="text-center">

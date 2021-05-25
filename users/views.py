@@ -1,7 +1,6 @@
-from django.contrib.auth.models import User
 from main.service import get_homes
 from location.models import City, Country, Object, Street
-from users.models import Account, CustomUser
+from users.models import Account, CustomUser, Faktura
 from django.shortcuts import render,redirect
 import random, string, openpyxl
 from django.contrib import messages
@@ -10,9 +9,10 @@ from django.http import HttpResponse
 from django.contrib.auth import update_session_auth_hash
 from django.db.models import Q
 from django.core.paginator import Paginator
-from django.core.mail import send_mail
 from domok.settings import EMAIL_FROM
 from django.core.mail import EmailMultiAlternatives
+from .services import get_years
+from django.contrib.auth.decorators import login_required
 
 def set_password(request,pk):
     letters = string.ascii_letters
@@ -116,6 +116,47 @@ def upload_account(request):
             messages.error(request, "No file")
             return redirect("{0}://{1}".format('http', request.get_host()) + '/admin/users/account/')
 
+def upload_fakturas(request):
+    accounts = Account.objects.all()
+    post = request.POST
+    year = post['year']
+    month = post['month']
+    excel_file = request.FILES['file']
+    if not excel_file.name.endswith('xlsx'):
+        messages.error(request, "Формат файла должен быть xlsx.")
+        return redirect("{0}://{1}".format('http', request.get_host()) + "/admin/users/faktura/")
+    wb = openpyxl.load_workbook(excel_file)
+    new_sheets = []
+    for index, sheet in enumerate(wb.worksheets):
+        if index%2==0:
+            cell_value = sheet.cell(row=1, column=1).value
+            start_index = cell_value.index("Лицевой счет : ")+15
+            end_index = cell_value.index("(",start_index)
+            first_sheet = wb.worksheets[index]
+            second_sheet =  wb.worksheets[index+1]
+            new_sheets.append({
+                0:first_sheet,
+                1:second_sheet,
+                2:cell_value[start_index:end_index].strip()
+            })
+    for sheet in wb.worksheets:
+        wb.remove(sheet)
+    for nsh in new_sheets:
+        first_worksheet = wb.copy_worksheet(nsh[0])
+        first_worksheet.title = "Страница 1"
+        second_worksheet = wb.copy_worksheet(nsh[1])
+        second_worksheet.title = "Страница 2"
+        wb.save('media/fakturas/'+year+"_"+month+"_"+nsh[2]+".xlsx")
+        for sheet in wb.worksheets:
+            wb.remove(sheet)
+        faktura = Faktura(file='fakturas/'+year+"_"+month+"_"+nsh[2]+".xlsx",created_by_id=request.user.id,year=year,month=month,account_name=nsh[2])
+        if accounts.filter(account=nsh[2]).count()>0:
+            faktura.account = accounts.filter(account=nsh[2]).first()
+        faktura.save()
+    messages.success(request, "Файл успешно загружен.")
+    return redirect("{0}://{1}".format('http', request.get_host()) + "/admin/users/faktura/")
+
+@login_required(login_url="/accounts/login/")
 def contacts(request):
     organization_workers = CustomUser.objects.filter(
         worker_organizations__organization__organization_objects__object_id = request.session.get('current_object')).exclude(id=request.user.id)
@@ -125,10 +166,95 @@ def contacts(request):
                 "homes":homes['homes'], "current":homes['current']}
     return render(request,'contacts/contacts.html',context)
 
+@login_required(login_url="/accounts/login/")
 def account(request):
+    fakturas = Faktura.objects.filter(account__object_id = request.session.get('current_object'))
+    name = request.GET.get('name','')
+    account_filter = request.GET.get('account','')
+    appartment = request.GET.get('appartment',"")
+    year = request.GET.get('year',None)
+    month = request.GET.get('month',None)
+    if name is not None:
+        fakturas = fakturas.filter(Q(account__custom_user__first_name__icontains = name) | 
+                                Q(account__custom_user__last_name__icontains = name) |
+                                Q(account__custom_user__middle_name__icontains = name))
+    if account_filter is not None:
+        fakturas = fakturas.filter(account__account__icontains = account_filter)
+    if appartment is not None:
+        fakturas = fakturas.filter(account__object__appartment__icontains = appartment)
+    if year is not None and year != "":
+        year = int(year)
+        fakturas = fakturas.filter(year = year)
+    if month is not None and month != "":
+        month = int(month)
+        fakturas = fakturas.filter(month = month)
+    years = "<select name='year' class='form-control'>"\
+                +"<option value=''>Выберите год</option>"    
+    for item in get_years():
+        if year == item[0]:
+            years+="<option value='"+str(item[0])+"' selected>"+str(item[0])+"</option>"
+        else:
+            years+="<option value='"+str(item[0])+"'>"+str(item[0])+"</option>"
+    years+= "</select>"
+    paginator = Paginator(fakturas.distinct(), 5)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    homes = get_homes(request)
+    context = {"homes":homes['homes'], "current":homes['current'], "fakturas":page_obj,"years":years,"filters":{
+                                    "name":name,
+                                    "year":year,
+                                    "account":account_filter,
+                                    "appartment":appartment,
+                                    "month":month,
+                                }}
+    return render(request,'accounts/accounts.html', context)
+
+@login_required(login_url="/accounts/login/")
+def upload_faktura(request):
+    if request.user.role != "moderator":
+        return redirect('users:account')
     homes = get_homes(request)
     context = {"homes":homes['homes'], "current":homes['current']}
-    return render(request,'accounts/accounts.html', context)
+    if request.method == 'POST':
+        accounts = Account.objects.all()
+        post = request.POST
+        year = post['year']
+        month = post['month']
+        excel_file = request.FILES['file']
+        if not excel_file.name.endswith('xlsx'):
+            context['errors'] = "Формат файла должен быть xlsx."
+            return render(request,'accounts/upload-faktura.html', context)
+        wb = openpyxl.load_workbook(excel_file)
+        new_sheets = []
+        for index, sheet in enumerate(wb.worksheets):
+            if index%2==0:
+                cell_value = sheet.cell(row=1, column=1).value
+                start_index = cell_value.index("Лицевой счет : ")+15
+                end_index = cell_value.index("(",start_index)
+                first_sheet = wb.worksheets[index]
+                second_sheet =  wb.worksheets[index+1]
+                new_sheets.append({
+                    0:first_sheet,
+                    1:second_sheet,
+                    2:cell_value[start_index:end_index].strip()
+                })
+        for sheet in wb.worksheets:
+            wb.remove(sheet)
+        for nsh in new_sheets:
+            first_worksheet = wb.copy_worksheet(nsh[0])
+            first_worksheet.title = "Страница 1"
+            second_worksheet = wb.copy_worksheet(nsh[1])
+            second_worksheet.title = "Страница 2"
+            wb.save('media/fakturas/'+year+"_"+month+"_"+nsh[2]+".xlsx")
+            for sheet in wb.worksheets:
+                wb.remove(sheet)
+            faktura = Faktura(file='fakturas/'+year+"_"+month+"_"+nsh[2]+".xlsx",created_by_id=request.user.id,year=year,month=month,account_name=nsh[2])
+            if accounts.filter(account=nsh[2]).count()>0:
+                faktura.account = accounts.filter(account=nsh[2]).first()
+            faktura.save()
+        return redirect("users:account")
+    
+    return render(request,'accounts/upload-faktura.html', context)
 
 def upload(request):
     if request.method == 'POST':
@@ -137,6 +263,7 @@ def upload(request):
             image_form.save()
             return HttpResponse(request.user.image.url)
 
+@login_required(login_url="/accounts/login/")
 def profile(request):
     custom_user = CustomUser.objects.get(id = request.user.id)
     image_form = ProfileImageForm(instance=custom_user)    
@@ -168,6 +295,7 @@ def profile(request):
         context['accounts'] = accounts
     return render(request,'profile/profile.html',context)
 
+@login_required(login_url="/accounts/login/")
 def owners(request):
     accounts = Account.objects.filter(object_id = request.session.get('current_object'))
     name = request.GET.get('name','')
@@ -211,6 +339,7 @@ def upload_owner_image(request,pk):
             user_updated = CustomUser.objects.get(id=pk)
             return HttpResponse(user_updated.image.url)
 
+@login_required(login_url="/accounts/login/")
 def owner(request,pk):
     custom_user = CustomUser.objects.get(id = pk)
     image_form = ProfileImageForm(instance=custom_user)    
