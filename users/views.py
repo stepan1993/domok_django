@@ -1,3 +1,4 @@
+from service.models import Organization, OrganizationObject
 from main.service import get_homes
 from location.models import City, Country, Object, Street
 from users.models import Account, CustomUser, Faktura
@@ -48,7 +49,7 @@ def upload_account(request):
         if request.FILES:
             excel_file = request.FILES['myfile']
             if not excel_file.name.endswith('xlsx'):
-                messages.error(request, "wrong format")
+                messages.error(request, "Неправильный формат.")
                 return redirect("{0}://{1}".format('http', request.get_host()) + '/admin/users/account/?wf=True')
             wb = openpyxl.load_workbook(excel_file)
             sheetname = str(wb.sheetnames[0])
@@ -66,54 +67,53 @@ def upload_account(request):
             error_rows = []
             for row in excel_data[1:]:
                 try:
-                    try:
-                        country = Country.objects.get(name = row[2])
-                    except:
-                        country = Country(name=row[2])
-                        country.save()
-                    try:
-                        city = City.objects.get(country_id = country.id, name = row[3])
-                    except:
-                        city = City(country_id=country.id, name=row[3])
-                        city.save()
-                    try:
-                        street = Street.objects.get(city_id=city.id,name=row[4])
-                    except:
-                        street = Street(city_id=city.id, name=row[4])
-                        street.save()
-                    try:
-                        object = Object.objects.get(street_id=street.id,
-                                                    home=row[5],
-                                                    campus=row[6],
-                                                    appartment=row[7][:-2]
-                                                    )
-                    except:
-                        object = Object(street_id=street.id,
-                                                    home=row[5],
-                                                    campus=row[6],
-                                                    appartment=row[7][:-2]
-                                                    )
-                        object.save()
-                    account = Account()
-                    account.account = row[0][:-2]
-                    account.name = row[1]
-                    account.total_square = row[8]
-                    account.living_square = row[9]
-                    account.share = row[10]
-                    account.object_id=object.id
-                    account.save()
+                    Account.objects.get(account=row[0])
                 except:
-                    error_rows.append(row[0][:-2])
+                    try:
+                        city = City.objects.get(name = row[2])
+                        try:
+                            street = Street.objects.get(city_id=city.id,name=row[3])
+                        except:
+                            street = Street(city_id=city.id, name=row[3])
+                            street.save()
+                        try:
+                            object = Object.objects.get(street_id=street.id,
+                                                        home=row[4],
+                                                        campus= None if row[5] =="" or row[5] =="None" else row[5],
+                                                        appartment_number= None if row[6] =="" or row[6] =="None" else row[6]
+                                                        )
+                        except:
+                            object = Object(street_id=street.id,
+                                                        home=row[4],
+                                                        campus= None if row[5] =="" or row[5] =="None" else row[5],
+                                                        appartment_number=  None if row[6] =="" or row[6] =="None" else row[6]
+                                                        )
+                            object.save()
+                        try:
+                            organization = Organization.objects.get(name=row[10])
+                            OrganizationObject(organization_id = organization.id,object_id = object.id).save()
+                        except:
+                            pass
+                        account = Account()
+                        account.account = row[0]
+                        account.name =  row[1]
+                        account.total_square = 0 if row[7] =="" or row[7] =="None" else float(row[7])
+                        account.living_square =  0 if row[8] =="" or row[8] =="None" else  float(row[8])
+                        account.share =  0 if row[9] =="" or row[9] =="None" else float(row[9])
+                        account.object_id=object.id
+                        account.save()
+                    except:
+                        error_rows.append(row[0])
             if len(error_rows)==0:
-                messages.info(request, "Succeed")
+                messages.info(request, "Счета успешно сохранены.")
             else:
                 rows = ""
                 for row in error_rows:
                     rows += " "+row+","
-                messages.warning(request, "There are some rows, which was not imported. Rows"+rows)
+                messages.warning(request, "Есть строки, которые не были импортированы. Строки "+rows)
             return redirect("{0}://{1}".format('http', request.get_host()) + '/admin/users/account/')
         else:
-            messages.error(request, "No file")
+            messages.error(request, "Нет файла.")
             return redirect("{0}://{1}".format('http', request.get_host()) + '/admin/users/account/')
 
 def upload_fakturas(request):
@@ -171,7 +171,7 @@ def account(request):
     fakturas = Faktura.objects.filter(account__object_id = request.session.get('current_object'))
     name = request.GET.get('name','')
     account_filter = request.GET.get('account','')
-    appartment = request.GET.get('appartment',"")
+    appartment_number = request.GET.get('appartment_number',"")
     year = request.GET.get('year',None)
     month = request.GET.get('month',None)
     if name is not None:
@@ -180,8 +180,8 @@ def account(request):
                                 Q(account__custom_user__middle_name__icontains = name))
     if account_filter is not None:
         fakturas = fakturas.filter(account__account__icontains = account_filter)
-    if appartment is not None:
-        fakturas = fakturas.filter(account__object__appartment__icontains = appartment)
+    if appartment_number is not None:
+        fakturas = fakturas.filter(account__object__appartment_number__icontains = appartment_number)
     if year is not None and year != "":
         year = int(year)
         fakturas = fakturas.filter(year = year)
@@ -204,7 +204,7 @@ def account(request):
                                     "name":name,
                                     "year":year,
                                     "account":account_filter,
-                                    "appartment":appartment,
+                                    "appartment_number":appartment_number,
                                     "month":month,
                                 }}
     return render(request,'accounts/accounts.html', context)
@@ -297,23 +297,23 @@ def profile(request):
 
 @login_required(login_url="/accounts/login/")
 def owners(request):
-    accounts = Account.objects.filter(object_id = request.session.get('current_object'))
-    name = request.GET.get('name','')
-    phone_number = request.GET.get('phone_number','')
-    account_filter = request.GET.get('account','')
-    appartment = request.GET.get('appartment',"")
+    accounts = Account.objects.filter(object_id=request.session.get('current_object'))
+    name = request.GET.get('name',None)
+    phone_number = request.GET.get('phone_number',None)
+    account_filter = request.GET.get('account',None)
+    appartment_number = request.GET.get('appartment_number',None)
     active = request.GET.get('active',None)
-    if name is not None:
+    if name is not None and name !="":
         accounts = accounts.filter(Q(custom_user__first_name__icontains = name) | 
                                 Q(custom_user__last_name__icontains = name) |
                                 Q(custom_user__middle_name__icontains = name))
-    if phone_number is not None:
+    if phone_number is not None and phone_number !="":
         phone_number_f = phone_number.replace("(","").replace(")","").replace("-","").replace("+","")
         accounts = accounts.filter(custom_user__phone_number__icontains = phone_number_f)
-    if account_filter is not None:
+    if account_filter is not None and account_filter !="":
         accounts = accounts.filter(account__icontains = account_filter)
-    if appartment is not None:
-        accounts = accounts.filter(object__appartment__icontains = appartment)
+    if appartment_number is not None and appartment_number !="":
+        accounts = accounts.filter(object__appartment_number__icontains = appartment_number)
     if active is not None and active !="":
         if (int(active) == 1) | (int(active) == -1) | (int(active) == 0):
             accounts = accounts.filter(custom_user__is_active = int(active))
@@ -321,13 +321,16 @@ def owners(request):
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     homes = get_homes(request)
-    context = {"homes":homes['homes'], "current":homes['current'],"accounts":page_obj,"filters":{
-        "name":name,
-        "phone_number":phone_number,
-        "account":account_filter,
-        "appartment":appartment,
-        "active":active,
-    }}
+    context = {"homes":homes['homes'], "current":homes['current'],
+        "accounts":page_obj,
+        "leng":accounts.count(),
+        "filters":{
+            "name":name if name is not None else "",
+            "phone_number":phone_number if phone_number is not None else "",
+            "account":account_filter if account_filter is not None else "",
+            "appartment_number":appartment_number if appartment_number is not None else "",
+            "active":active if active is not None else "",
+        }}
     return render(request,'contacts/owners.html',context)
 
 def upload_owner_image(request,pk):

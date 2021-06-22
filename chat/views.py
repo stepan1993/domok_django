@@ -13,7 +13,6 @@ def chat(request):
         messages.exclude(user_id = request.user.id).update(is_opened=True, opened_at = datetime.datetime.now())
     except:
         messages = None
-    
     if request.method == "POST":
         form = ChatMessageForm(request.POST)
         if form.is_valid():

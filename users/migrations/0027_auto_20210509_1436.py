@@ -17,7 +17,5 @@ class Migration(migrations.Migration):
             name='custom_user',
             field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='custom_user_account', to=settings.AUTH_USER_MODEL),
         ),
-        migrations.DeleteModel(
-            name='ClientAccount',
-        ),
+   
     ]

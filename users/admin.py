@@ -68,7 +68,10 @@ class Account(admin.ModelAdmin):
         list_display = ('account', 'user_full_name','share','address')
         # list_display_links = ['account','address']
         def user_full_name(self,obj):
-                return f"{obj.custom_user.last_name} {obj.custom_user.first_name} {obj.custom_user.middle_name} "
+                if obj.custom_user:
+                        return f"{obj.custom_user.last_name} {obj.custom_user.first_name} {obj.custom_user.middle_name}"
+                else:
+                        return f"{obj.name}"
         def address(self,obj):
                 return f"{obj.object}"
         user_full_name.short_description="ФИО"

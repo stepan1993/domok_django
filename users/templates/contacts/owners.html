@@ -25,7 +25,7 @@
             </div>
             <div class="pr-8 filter-three-w-10">
                 <div class="mb-15">
-                    <input name="appartment" type="text" class="form-control" value="{{ filters.appartment }}" placeholder="№ кв.">
+                    <input name="appartment_number" type="text" class="form-control" value="{{ filters.appartment_number }}" placeholder="№ кв.">
                 </div>
             </div>
             <div class="pr-8 filter-three-w-20">
@@ -63,10 +63,16 @@
                 <tbody>
                     {% for account in accounts %}
                         <tr>
-                            <td><a href="{% url 'users:owner' account.custom_user.id %}">
+                            <td>
+                                {% if account.custom_user.id %}
+                                <a href="{% url 'users:owner' account.custom_user.id %}">
                                 {{ account.custom_user.last_name }} {{ account.custom_user.first_name }} {{ account.custom_user.middle_name }}
-                            </a></td>
-                            <td> {{ account.object.appartment }}</td>
+                                </a>
+                                {% else %}
+                                {{ account.name }}
+                                {% endif %}
+                        </td>
+                            <td> {{ account.object.appartment_number }}</td>
                             <td> {{ account.custom_user.phone_number }}</td>
                             <td> {{ account.account }}</td>
                             {% if account.custom_user.is_active == 1 %}

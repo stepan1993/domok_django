@@ -45,13 +45,19 @@ class Object(models.Model):
     home = models.CharField(max_length=255,null=False, blank=False,verbose_name="Дом")
     campus = models.CharField(max_length=255,null=True, blank=True,verbose_name="Корпус")
     floor = models.IntegerField(null=True, blank=True,verbose_name="Этажей")
-    entrance = models.IntegerField(null=True, blank=True,verbose_name="Подъездов")
-    appartment = models.IntegerField(null=True, blank=True,verbose_name="Квартир")
+    entrance_number = models.CharField(null=True, blank=True,max_length=255,verbose_name="Подъездов")
+    appartment_number = models.CharField(null=True, blank=True,max_length=255,verbose_name="Квартир")
     comment = models.TextField(null=True, blank=True,verbose_name="Описание")
 
     def __str__(self):
-        return f"{self.street.city.country}, {self.street.city}, {self.street}, {self.home}, корп. {self.campus}"
+        text = f"{self.street.city.country}, {self.street.city}, {self.street}, {self.home}, "
+        if self.campus is not None and self.campus !=0:
+            text+= "корп. "+str(self.campus)  
+        else:
+            text+= ""
+        text+=" кв. "+str(self.appartment_number)
+        return text
     class Meta:
-        unique_together = ['street', 'home','campus','floor','entrance','appartment']
+        unique_together = ['street', 'home','campus','floor','entrance_number','appartment_number']
         verbose_name_plural = " Объекты"
         verbose_name = " Объект"

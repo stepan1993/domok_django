@@ -97,7 +97,7 @@ class StreetAdmin(admin.ModelAdmin):
 
 @admin.register(Object)
 class ObjectAdmin(admin.ModelAdmin):
-    list_display = ['country','city',"street","home","campus","floor","entrance", "appartment"]
+    list_display = ['country','city',"street","home","campus","floor","entrance_number", "appartment_number"]
     list_filter = ('street__city__country','street__city','street',)
     search_fields = ['street__city__country__name','street__city__name','street__name']
     form = ObjectForm

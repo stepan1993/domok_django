@@ -1,0 +1,47 @@
+{% extends 'main/main.html' %}
+{% block title %}Все сообщения. ДомОК{% endblock %}
+{% block content %}   
+{% block navbar %}{% include 'main/navbar.html' with active_tab="problem" %}{% endblock %}
+<div class="alert alert-success text-center">
+    <div class="row">
+        <div class="col-xs-12 col-sm-4 col-sm-offset-4">
+            <h4 class="mb-0 mb-xs-15">Сообщить о проблеме</h4>
+        </div>
+        <div class="col-xs-12 col-sm-4">
+            <a href="{% url 'problem:problem' %}" class="btn btn-primary btn-xs">Все сообщения</a>					
+        </div>
+    </div>
+</div>
+
+<div class="panel panel-default">
+	<div class="panel-body">
+		<form action="client/tickets/addTicket" method="post" enctype="multipart/form-data">
+			<div class="mb-15">
+				<select class="form-control" name="service" required="">
+					<option value="">Кому</option>
+					<option value="0">Председателю</option>
+											<option value="4">Электрику</option>
+											<option value="2">Паспортисту</option>
+											<option value="3">Сантехнику</option>
+									</select>
+			</div>
+			<div class="mb-15">
+				<input type="text" name="name" placeholder="Проблема" class="form-control" required="">
+			</div>
+			<div class="mb-15">
+				<textarea name="text" id="" class="form-control" cols="30" rows="10" placeholder="Подробнее о проблеме" required=""></textarea>
+			</div>
+			<div class="fileupload-list js-fileupload-list"></div>
+			<div class="clearfix">
+				<div class="pull-left">
+					<button type="button" class="btn btn-info js-add-file">Добавить файл</button>
+				</div>
+				<div class="pull-right">
+					<a href="client/tickets" class="btn btn-default">Отменить</a>
+					<button type="submit" class="btn btn-success">Отправить</button>
+				</div>
+			</div>
+		</form>
+	</div>
+</div>
+{% endblock %}

@@ -60,7 +60,8 @@ def set_vote(request, id):
 def result(request, id):
     vote = Vote.objects.get(id=id)  
     homes = get_homes(request)
-    context = {"homes":homes['homes'], "current":homes['current'],"vote":vote}
+    current_user_vote = 0 if vote.vote_members.filter(member_id = request.user.id).count() == 0 else vote.vote_members.filter(member_id = request.user.id).first().point
+    context = {"homes":homes['homes'], "current":homes['current'],"vote":vote,"current_user_vote":current_user_vote}
     return render(request,'vote/result.html',context)
 
 @login_required(login_url="/accounts/login/")

@@ -28,7 +28,9 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     role = models.CharField(max_length=20,null=False, default="administrator",blank=False)
     specialization = models.ManyToManyField(Service, verbose_name="Обязанности")
     organization = models.ManyToManyField(Organization,  verbose_name="Организации")
+    telegram_id = models.CharField(max_length=255,blank=True, null=True)
     object = models.ManyToManyField(Object, verbose_name="Объекты", related_name="object_moderators")
+    
     USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = []
 
@@ -131,8 +133,8 @@ class Faktura(models.Model):
         return self.account.custom_user if self.account else "Unknown User"
 
     @property
-    def appartment(self):
-        return self.account.object.appartment if self.account else "Unknown User" 
+    def appartment_number(self):
+        return self.account.object.appartment_number if self.account else "Unknown User" 
 
     class Meta:
         verbose_name = "Фактура"

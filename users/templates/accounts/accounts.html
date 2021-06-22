@@ -60,7 +60,7 @@
             </select>
             {{years|safe}}
             <input type="text" name="name" placeholder="ФИО" value="{{ filters.name }}" class="form-control" style="width: 150px;">
-            <input type="text" name="appartment" placeholder="№" value="{{ filters.appartment }}" class="form-control" style="width: 50px;">
+            <input type="text" name="appartment_number" placeholder="№" value="{{ filters.appartment_number }}" class="form-control" style="width: 50px;">
             <input type="text" name="account" placeholder="Лицевой счет" value="{{ filters.account }}" class="form-control" style="width: 120px;">
             <button class="btn btn-success">Найти</button>
             <a href="{% url 'users:upload-faktura' %}" class="btn btn-info" style="float: right;">Загрузить</a>
@@ -98,7 +98,7 @@
         {% for faktura in fakturas %}
             <tr>
                 <td>{{ faktura.user_name }}</td>
-                <td>{{ faktura.appartment }}</td>
+                <td>{{ faktura.appartment_number }}</td>
                 <td>{{ faktura.year }} / {{ faktura.month_name }}</td>
                 <td>{{ faktura.account }}</td>
                 <td>

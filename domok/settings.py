@@ -28,6 +28,8 @@ INSTALLED_APPS = [
     'django_cascading_dropdown_widget',
     'ckeditor',
     'ckeditor_uploader',
+    "django_tgbot",
+
     'main',
     'location',
     'service',
@@ -37,6 +39,7 @@ INSTALLED_APPS = [
     "chat",
     "vote",
     "ticket",
+    "tg"
 ]
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
@@ -78,28 +81,28 @@ WSGI_APPLICATION = 'domok.wsgi.application'
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': 'domok',
-#         'USER': 'root',
-#         'PASSWORD': '',
-#         'HOST': 'localhost', 
-#         'PORT': '3306',
-#         'OPTIONS': {}
-#     }
-# }
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'domok',
-        'USER': 'user1',
-        'PASSWORD': 'user1',
-        'HOST': '46.101.179.50', 
+        'USER': 'root',
+        'PASSWORD': '',
+        'HOST': 'localhost', 
         'PORT': '3306',
-        'OPTIONS': {'charset': 'utf8mb4'}
+        'OPTIONS': {}
     }
 }
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'domok',
+#         'USER': 'user1',
+#         'PASSWORD': 'user1',
+#         'HOST': '46.101.179.50', 
+#         'PORT': '3306',
+#         'OPTIONS': {'charset': 'utf8mb4'}
+#     }
+# }
 
 
 # Password validation
@@ -165,3 +168,4 @@ EMAIL_HOST_PASSWORD = "domok.create123"
 EMAIL_FROM = "domok.create@gmail.com"
 
 CORS_ORIGIN_ALLOW_ALL=True
+

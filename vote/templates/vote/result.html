@@ -44,11 +44,11 @@
                 <tr>
                     <td>Ваш Вклад</td>
                     <td>
-                        {% if vote.highest_vote == 1 %}
+                        {% if current_user_vote == 1 %}
                         <span class="text-success text-uppercase"><b>ЗА</b></span>
-                        {% elif vote.highest_vote == 2 %}
+                        {% elif current_user_vote == 2 %}
                         <span class="text-danger text-uppercase"><b>ПРОТИВ</b></span>
-                        {% elif vote.highest_vote == 3 %}
+                        {% elif current_user_vote == 3 %}
                         <span class="text-warning text-uppercase"><b>ВСЕ РАВНО</b></span>
                         {% else %}
                         <span class="text-uppercase"><b>НЕ УЧАСТВОВАЛИ</b></span>

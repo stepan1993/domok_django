@@ -86,7 +86,7 @@ class RegistrationForm(forms.ModelForm):
         if not password1:
             raise forms.ValidationError("Введите пароль.")
         if len(password1)<=5:
-            raise forms.ValidationError("Пароль дольжен содержить минимум 6 символов..")
+            raise forms.ValidationError("Пароль дольжен содержить минимум 6 символов.")
         return password1
         
     def clean_username(self):

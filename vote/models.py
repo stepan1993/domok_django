@@ -168,5 +168,5 @@ class VoteMember(models.Model):
     def user_total_square(self):
         return self.vote.object.object_accounts.get(custom_user_id=self.member.id).total_square
     @property
-    def user_appartment(self):
-        return self.vote.object.object_accounts.get(custom_user_id=self.member.id).object.appartment
+    def user_appartment_number(self):
+        return self.vote.object.object_accounts.get(custom_user_id=self.member.id).object.appartment_number

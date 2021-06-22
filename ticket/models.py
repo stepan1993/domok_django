@@ -17,7 +17,7 @@ class Ticket(models.Model):
     description = models.TextField(null=False, blank=False)
     created_date = models.DateTimeField(auto_now_add=True)
     whom = models.ForeignKey(Service, on_delete=PROTECT, null=False, blank=False)
-    status = models.IntegerField(choices=STATUS_CHOICES, max_length=255, null=False, blank=False, default=1)
+    status = models.IntegerField(choices=STATUS_CHOICES,  null=False, blank=False, default=1)
     accepted = models.BooleanField(default=False)
     accepted_by = models.ForeignKey(CustomUser, on_delete=CASCADE, null=True, blank=True)
     finished = models.BooleanField(default=False)
@@ -50,6 +50,6 @@ class CommentFile(models.Model):
 class TicketStatusHistory(models.Model):
     ticket = models.ForeignKey(Ticket, null=False, blank=False, on_delete=CASCADE, related_name="ticket_status_histories")
     user = models.ForeignKey(CustomUser, on_delete=CASCADE, null=False, blank=False)
-    status = models.IntegerField(choices=STATUS_CHOICES, max_length=255, null=False, blank=False)
+    status = models.IntegerField(choices=STATUS_CHOICES, null=False, blank=False)
     date = models.DateTimeField(auto_now_add=True)
     

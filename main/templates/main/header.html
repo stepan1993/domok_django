@@ -18,8 +18,7 @@
                             {% for home in homes %}  
                                 <li>
                                     <a href="{% url 'main:change-current-home' %}?id={{ home.id }}" class="js-change-object" data-object="9">
-                                        {{ home.street.city.country }}, {{ home.street.city }}, {{ home.street }}, 
-                                        {{ home.home|slice:":-2" }}
+                                        {{ home }}
                                     </a>
                                 </li>
                             {% endfor %}
@@ -36,7 +35,7 @@
                         Электронная квартира:
                     {% endif %}
                     {{ current.street.city.country }}, 
-                    {{ current.street.city }}, {{ current.street }}, {{ current.home|slice:":-2" }}, кв. {{ current.appartment }}</p>
+                    {{ current.street.city }}, {{ current.street }}, {{ current.home|slice:":-2" }}, кв. {{ current.appartment_number }}</p>
             {% endif %}
         </div>
     </div>
